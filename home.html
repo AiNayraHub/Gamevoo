@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamevoo - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+    <div class="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col">
+        <div class="p-5 flex justify-between items-center border-b">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-gamepad text-blue-600 text-2xl"></i>
+                <span class="font-bold text-xl text-blue-700">Gamevoo</span>
+            </div>
+            <div class="bg-blue-50 px-3 py-1 rounded-full flex items-center gap-2">
+                <span class="text-yellow-500">🪙</span>
+                <span id="coins" class="font-bold">137</span>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <div class="bg-white border rounded-[30px] p-6 shadow-xl flex justify-between items-center border-l-4 border-l-orange-400">
+                <div>
+                    <p class="text-gray-400 text-sm">Balance:</p>
+                    <h4 class="text-3xl font-black">🪙 <span id="main-coins">137</span></h4>
+                </div>
+                <button onclick="alert('Withdraw logic here')" class="bg-orange-400 text-white px-4 py-2 rounded-xl font-bold text-xs">REWARDS</button>
+            </div>
+
+            <div class="space-y-4">
+                <div onclick="add(20)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-play text-blue-500"></i>
+                        <span class="font-bold text-sm">Play Games</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-blue-400">ADS</span>
+                </div>
+
+                <div onclick="add(10)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-video text-purple-500"></i>
+                        <span class="font-bold text-sm">Watch Videos</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-purple-400">ADS</span>
+                </div>
+
+                <div onclick="alert('Telegram Joined!')" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fab fa-telegram text-sky-500"></i>
+                        <span class="font-bold text-sm">Gift Code</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-sky-400">NEW</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-auto p-5 border-t flex justify-around text-gray-300">
+            <i class="fas fa-home text-blue-600 text-2xl"></i>
+            <i class="fas fa-wallet text-2xl"></i>
+            <i class="fas fa-user text-2xl"></i>
+        </div>
+    </div>
+
+    <script>
+        let balance = 137;
+        function add(n) {
+            balance += n;
+            document.getElementById('coins').innerText = balance;
+            document.getElementById('main-coins').innerText = balance;
+            alert(n + " Coins earned!");
+        }
+    </script>
+</body>
+                  </html>
+
