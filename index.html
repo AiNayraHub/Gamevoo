@@ -3,157 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Earn Real Money</title>
+    <title>Gamevoo - Earn & Withdraw</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
-        .gradient-bg { background: linear-gradient(135deg, #60a5fa 0%, #a855f7 50%, #fb923c 100%); }
+        body { font-family: 'Inter', sans-serif; }
+        .btn-gradient { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .hidden { display: none; }
+        .active-tab { color: #3b82f6 !important; }
     </style>
 </head>
-<body class="bg-blue-50 font-sans min-h-screen">
+<body class="bg-blue-50 min-h-screen">
 
-    <div id="login-screen" class="flex items-center justify-center min-h-screen p-4">
+    <div id="login-page" class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white rounded-[40px] shadow-2xl w-full max-w-sm p-8 text-center border border-white">
             <div class="mb-6 flex flex-col items-center">
-                <div class="w-20 h-20 gradient-bg rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mb-4">
+                <div class="w-20 h-20 bg-gradient-to-tr from-blue-500 via-purple-500 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mb-4">
                     <i class="fas fa-gamepad text-4xl text-white"></i>
                 </div>
-                <h1 class="text-4xl font-black text-blue-600">Gamevoo</h1>
+                <h1 class="text-4xl font-black text-blue-600 tracking-tighter">Gamevoo</h1>
             </div>
             
-            <h2 class="text-xl font-bold text-gray-800 mb-6">Sign in to earn coins!</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-1">Sign in to earn coins!</h2>
+            <p class="text-gray-500 text-sm mb-6">Enter email & password to start</p>
 
-            <div class="space-y-3">
-                <input id="email" type="email" placeholder="Email Address" class="w-full px-5 py-3 bg-gray-100 rounded-2xl border-none focus:ring-2 focus:ring-blue-400 outline-none">
-                <input id="password" type="password" placeholder="Password" class="w-full px-5 py-3 bg-gray-100 rounded-2xl border-none focus:ring-2 focus:ring-blue-400 outline-none">
-                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-full font-bold text-lg shadow-lg hover:bg-blue-700 transition-all">Start Now</button>
+            <div class="space-y-3 mb-4">
+                <input id="email" type="email" placeholder="Email ID" class="w-full px-5 py-3.5 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400">
+                <input id="pass" type="password" placeholder="Password" class="w-full px-5 py-3.5 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400">
+                <button onclick="handleLogin()" class="w-full btn-gradient text-white py-4 rounded-full font-bold text-lg shadow-lg hover:scale-[1.02] transition-all">Start Now</button>
             </div>
 
-            <p class="text-gray-400 text-xs mt-6">— OR —</p>
-            <button class="w-full mt-4 flex items-center justify-center gap-3 border border-gray-200 py-3 rounded-2xl hover:bg-gray-50 transition-all font-semibold text-gray-600">
+            <p class="text-gray-400 text-xs mb-4">— OR —</p>
+            <button class="w-full flex items-center justify-center gap-3 border border-gray-200 py-3 rounded-2xl font-semibold text-gray-600 mb-6">
                 <img src="https://www.google.com/favicon.ico" class="w-4 h-4"> Sign In with Google
             </button>
 
-            <div class="mt-8 space-y-3 text-left">
+            <div class="space-y-3 text-left">
                 <div class="flex items-center gap-3 font-bold text-gray-700 text-sm">
-                    <span class="bg-blue-500 p-2 rounded-lg text-white text-xs">1</span> Play & Earn
+                    <div class="bg-blue-500 p-1.5 rounded-lg text-white"><i class="fas fa-play text-[10px]"></i></div> 1. Play Games
                 </div>
                 <div class="flex items-center gap-3 font-bold text-gray-700 text-sm">
-                    <span class="bg-purple-500 p-2 rounded-lg text-white text-xs">2</span> Watch & Earn
+                    <div class="bg-purple-500 p-1.5 rounded-lg text-white"><i class="fas fa-video text-[10px]"></i></div> 2. Watch Videos
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="home-screen" class="hidden max-w-sm mx-auto min-h-screen bg-white shadow-2xl relative flex flex-col">
-        <div class="p-6 flex justify-between items-center">
+    <div id="home-page" class="hidden max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative">
+        <div class="p-5 flex justify-between items-center bg-white sticky top-0 z-20 border-b border-gray-50">
             <div class="flex items-center gap-2">
-                <i class="fas fa-gamepad text-blue-500 text-2xl"></i>
-                <span class="font-bold text-xl text-blue-600">Gamevoo</span>
+                <i class="fas fa-gamepad text-blue-600 text-2xl"></i>
+                <span class="font-bold text-xl text-blue-700">Gamevoo</span>
             </div>
-            <div class="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2">
+            <div class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
                 <span class="text-yellow-500">🪙</span>
-                <span id="coin-balance" class="font-bold text-gray-800">137</span>
-                <div class="w-6 h-6 bg-blue-400 rounded-full overflow-hidden">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="user">
-                </div>
+                <span id="coin-count" class="font-bold text-gray-800">137</span>
+                <i onclick="showProfile()" class="fas fa-user-circle text-blue-400 text-xl cursor-pointer"></i>
             </div>
         </div>
 
-        <div class="px-6 space-y-6 overflow-y-auto flex-1">
-            <h3 class="text-lg font-medium text-gray-600">Welcome back!</h3>
+        <div class="p-6 space-y-6 overflow-y-auto flex-1">
+            <h3 class="text-lg font-medium text-gray-600 italic">Welcome to Gamevoo!</h3>
 
-            <div class="bg-white border border-blue-50 rounded-3xl p-6 shadow-sm flex justify-between items-center border-l-4 border-l-orange-400">
-                <div>
-                    <p class="text-gray-400 text-xs">Your Balance:</p>
-                    <h4 class="text-3xl font-black text-gray-800">🪙 <span id="display-coins">137</span></h4>
-                    <p class="text-[10px] text-gray-400 mt-1">100 Coins = ₹1.00</p>
+            <div class="bg-white border border-blue-50 rounded-[30px] p-6 shadow-xl flex justify-between items-center relative overflow-hidden">
+                <div class="z-10">
+                    <p class="text-gray-400 text-sm">Your Coins:</p>
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🪙</span>
+                        <span id="coin-main" class="text-3xl font-black text-gray-800">137</span>
+                    </div>
+                    <p class="text-[10px] text-blue-500 font-bold mt-1">100 Coins = ₹1</p>
                 </div>
-                <button onclick="withdraw()" class="bg-orange-400 text-white px-6 py-2 rounded-xl font-bold shadow-md shadow-orange-100 text-sm uppercase">Withdraw</button>
+                <button onclick="showRedeem()" class="z-10 bg-orange-400 text-white px-5 py-2.5 rounded-xl font-black shadow-lg shadow-orange-100 text-[10px] uppercase">Rewards</button>
             </div>
 
             <div class="space-y-4">
-                <div onclick="addCoins(10)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-blue-50 transition-all">
+                <div onclick="addCoins(20)" class="flex items-center justify-between p-4 bg-gray-50 rounded-[24px] border border-transparent hover:border-blue-200 cursor-pointer">
                     <div class="flex items-center gap-4">
-                        <div class="bg-blue-100 p-3 rounded-xl text-blue-500"><i class="fas fa-play"></i></div>
-                        <div><h5 class="font-bold text-sm">Play Games</h5><p class="text-[10px] text-gray-400">Earn 10 Coins / game</p></div>
+                        <div class="bg-blue-100 p-3 rounded-xl text-blue-600"><i class="fas fa-gamepad"></i></div>
+                        <div><h4 class="font-bold text-sm">Play Games</h4><p class="text-[10px] text-gray-400">Play & Earn Coins</p></div>
                     </div>
-                    <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Ads</span>
+                    <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase italic">Ads</span>
                 </div>
 
-                <div onclick="addCoins(5)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-purple-50 transition-all">
+                <div onclick="addCoins(10)" class="flex items-center justify-between p-4 bg-gray-50 rounded-[24px] border border-transparent hover:border-purple-200 cursor-pointer">
                     <div class="flex items-center gap-4">
-                        <div class="bg-purple-100 p-3 rounded-xl text-purple-500"><i class="fas fa-video"></i></div>
-                        <div><h5 class="font-bold text-sm">Watch Videos</h5><p class="text-[10px] text-gray-400">Earn 5 Coins / video</p></div>
+                        <div class="bg-purple-100 p-3 rounded-xl text-purple-600"><i class="fas fa-video"></i></div>
+                        <div><h4 class="font-bold text-sm">Watch Videos</h4><p class="text-[10px] text-gray-400">Watch & Earn Coins</p></div>
                     </div>
-                    <span class="bg-purple-100 text-purple-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Ads</span>
+                    <span class="bg-purple-100 text-purple-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase italic">Ads</span>
                 </div>
 
-                <div onclick="refer()" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-orange-50 transition-all">
+                <div onclick="openGiftCode()" class="flex items-center justify-between p-4 bg-gray-50 rounded-[24px] border border-transparent hover:border-orange-200 cursor-pointer">
                     <div class="flex items-center gap-4">
-                        <div class="bg-orange-100 p-3 rounded-xl text-orange-500"><i class="fas fa-user-plus"></i></div>
-                        <div><h5 class="font-bold text-sm">Refer & Earn</h5><p class="text-[10px] text-gray-400">Earn 50 Coins / friend</p></div>
+                        <div class="bg-orange-100 p-3 rounded-xl text-orange-600"><i class="fas fa-gift"></i></div>
+                        <div><h4 class="font-bold text-sm">Telegram Gift Code</h4><p class="text-[10px] text-gray-400">Enter & Earn Coins</p></div>
                     </div>
-                    <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Hot</span>
+                    <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase italic">Ads</span>
                 </div>
+
+                <div onclick="referFriend()" class="flex items-center justify-between p-4 bg-gray-50 rounded-[24px] border border-transparent hover:border-green-200 cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-green-100 p-3 rounded-xl text-green-600"><i class="fas fa-share-nodes"></i></div>
+                        <div><h4 class="font-bold text-sm">Refer & Earn</h4><p class="text-[10px] text-gray-400">Invite Friends</p></div>
+                    </div>
+                    <span class="bg-green-100 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase italic">Hot</span>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-blue-400 via-purple-400 to-orange-400 h-24 rounded-[28px] p-5 relative overflow-hidden flex items-center">
+                <div class="z-10"><p class="text-white font-black text-sm uppercase">Join Our Telegram</p><p class="text-white/80 text-[10px]">For Daily Codes & Giveaways</p></div>
+                <i class="fab fa-telegram absolute -right-4 -bottom-4 text-7xl text-white/20"></i>
+                <div class="absolute bottom-2 right-4 text-[8px] bg-black/10 px-2 rounded-full text-white">Ads</div>
             </div>
         </div>
 
-        <div class="p-4 border-t flex justify-around items-center bg-white">
-            <i class="fas fa-home text-blue-600 text-xl"></i>
-            <i class="fas fa-gamepad text-gray-300 text-xl"></i>
-            <i class="fas fa-gift text-gray-300 text-xl"></i>
-            <i class="fas fa-user text-gray-300 text-xl"></i>
+        <div class="p-4 bg-white border-t border-gray-100 flex justify-around items-center rounded-t-[30px] shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+            <i class="fas fa-home active-tab text-2xl"></i>
+            <i onclick="addCoins(5)" class="fas fa-gamepad text-gray-300 text-2xl cursor-pointer"></i>
+            <i onclick="showRedeem()" class="fas fa-wallet text-gray-300 text-2xl cursor-pointer"></i>
+            <i onclick="showProfile()" class="fas fa-user text-gray-300 text-2xl cursor-pointer"></i>
         </div>
     </div>
 
     <script>
-        // Supabase Configuration
-        const _url = 'https://kozmxgymkitcbevtufgz.supabase.co';
-        const _key = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
-        const supabase = supabase.createClient(_url, _key);
+        // --- 1. SUPABASE CONFIGURATION ---
+        const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
+        const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
+        const supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        let userCoins = 137;
+        let userBalance = 137;
 
+        // --- 2. LOGIN LOGIC ---
         async function handleLogin() {
             const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const pass = document.getElementById('pass').value;
 
-            if(!email || !password) return alert("Please fill all details");
+            if(!email || !pass) return alert("Bhai, Email aur Password toh dalo!");
 
-            // Switch Screen (For demo, directly showing home)
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('home-screen').classList.remove('hidden');
-        }
+            // Attempt Login
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: pass
+            });
 
-        function addCoins(amount) {
-            userCoins += amount;
-            updateUI();
-            alert(`You earned ${amount} coins!`);
-        }
-
-        function withdraw() {
-            if(userCoins < 1000) {
-                alert("Minimum withdrawal is 1000 Coins (₹10)");
+            if (error) {
+                alert("Error: " + error.message + "\n(Bina account ke bypass ke liye 'showDashboard()' call karein console mein)");
+                // Testing ke liye switch kar dete hain:
+                showDashboard();
             } else {
-                let amount = (userCoins / 100).toFixed(2);
-                alert(`Withdrawal Request Sent for ₹${amount}!`);
-                userCoins = 0;
-                updateUI();
+                alert("Login Successful!");
+                showDashboard();
             }
         }
 
-        function updateUI() {
-            document.getElementById('coin-balance').innerText = userCoins;
-            document.getElementById('display-coins').innerText = userCoins;
+        function showDashboard() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('home-page').classList.remove('hidden');
+            updateUI();
         }
 
-        function refer() {
-            alert("Share your link: gamevoo.com/invite?user=123");
+        // --- 3. CORE FEATURES ---
+        function updateUI() {
+            document.getElementById('coin-count').innerText = userBalance;
+            document.getElementById('coin-main').innerText = userBalance;
+        }
+
+        function addCoins(amount) {
+            userBalance += amount;
+            updateUI();
+            alert("Mubarak ho! " + amount + " coins earn kiye.");
+        }
+
+        function showRedeem() {
+            const upi = prompt("Enter UPI ID for Withdrawal (Min ₹10 / 1000 Coins):");
+            if(upi) {
+                if(userBalance < 1000) {
+                    alert("Balance kam hai! ₹10 (1000 Coins) chahiye.");
+                } else {
+                    alert("Redeem Request Sent for " + (userBalance/100).toFixed(2) + " to " + upi);
+                    userBalance = 0;
+                    updateUI();
+                }
+            }
+        }
+
+        function openGiftCode() {
+            const code = prompt("Enter Telegram Gift Code:");
+            if(code === "GAMEVOO100") {
+                addCoins(100);
+            } else {
+                alert("Galat code! Telegram channel check karein.");
+            }
+        }
+
+        function referFriend() {
+            const link = "https://gamevoo.com/invite?ref=user123";
+            alert("Invite Link Copy: " + link + "\nHar refer par 50 Coins milenge!");
+        }
+
+        function showProfile() {
+            alert("Profile Settings:\nCoins: " + userBalance + "\nAccount: Active");
         }
     </script>
 </body>
-  </html>
-          
+</html>
