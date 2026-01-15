@@ -8,60 +8,80 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-[#F0F4FF] flex items-center justify-center min-h-screen p-4">
+<body class="bg-[#F0F4FF] flex items-center justify-center min-h-screen p-4 font-sans">
 
     <div class="bg-white rounded-[40px] shadow-2xl w-full max-w-sm p-8 text-center border border-white">
         <div class="mb-6 flex flex-col items-center">
             <div class="w-20 h-20 bg-gradient-to-tr from-blue-500 via-purple-500 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mb-4">
                 <i class="fas fa-gamepad text-4xl text-white"></i>
             </div>
-            <h1 class="text-4xl font-black text-blue-600">Gamevoo</h1>
+            <h1 class="text-4xl font-black text-blue-600 tracking-tighter">Gamevoo</h1>
         </div>
         
-        <h2 class="text-xl font-bold text-gray-800 mb-6">Sign in to earn coins!</h2>
+        <h2 class="text-xl font-bold text-gray-800 mb-2">Sign in to earn coins!</h2>
+        <p class="text-gray-400 text-sm mb-6">Enter details to start earning</p>
 
         <div class="space-y-4">
-            <input id="email" type="email" placeholder="Email Address" class="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400">
-            <input id="pass" type="password" placeholder="Password" class="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400">
+            <input id="email" type="email" placeholder="Email Address" class="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+            <input id="pass" type="password" placeholder="Password" class="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400 transition-all">
             
-            <button onclick="login()" class="w-full bg-blue-600 text-white py-4 rounded-full font-bold text-lg shadow-lg hover:bg-blue-700 transition-all">
+            <button onclick="handleAuth()" class="w-full bg-blue-600 text-white py-4 rounded-full font-bold text-lg shadow-lg hover:bg-blue-700 active:scale-95 transition-all">
                 Start Now
             </button>
         </div>
 
+        <button onclick="bypassLogin()" class="mt-4 text-blue-400 text-xs underline">Skip to Dashboard (Demo)</button>
+
         <div class="mt-8 space-y-4 text-left border-t pt-6">
-            <div class="flex items-center gap-3 font-bold text-gray-700">
-                <div class="bg-blue-500 p-2 rounded-lg text-white text-[10px]">1</div> Play Games
+            <div class="flex items-center gap-3 font-bold text-gray-700 text-sm">
+                <div class="bg-blue-500 p-2 rounded-lg text-white"><i class="fas fa-play text-[10px]"></i></div> 1. Play & Earn
             </div>
-            <div class="flex items-center gap-3 font-bold text-gray-700">
-                <div class="bg-purple-500 p-2 rounded-lg text-white text-[10px]">2</div> Watch Videos
+            <div class="flex items-center gap-3 font-bold text-gray-700 text-sm">
+                <div class="bg-purple-500 p-2 rounded-lg text-white"><i class="fas fa-video text-[10px]"></i></div> 2. Watch & Earn
             </div>
         </div>
     </div>
 
     <script>
+        // Supabase Keys
         const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
         const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
-        const supabase = supabase.createClient(SB_URL, SB_KEY);
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-        async function login() {
+        async function handleAuth() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('pass').value;
 
-            if(!email || !password) return alert("Email and Password are required!");
-
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                alert("Login Error: " + error.message);
-                // Demo ke liye aap niche wali line use kar sakte hain agar database setup nahi hai
-                // window.location.href = "home.html"; 
-            } else {
-                // Success: Home page par redirect karein
-                window.location.href = "home.html";
+            if(!email || !password) {
+                alert("Bhai, Email aur Password toh dalo!");
+                return;
             }
+
+            // Pehle Sign Up try karte hain (Agar naya user hai toh)
+            const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ email, password });
+
+            if (signUpError) {
+                // Agar account pehle se hai, toh Login try karte hain
+                const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+                
+                if (signInError) {
+                    alert("Error: " + signInError.message);
+                } else {
+                    goToHome();
+                }
+            } else {
+                alert("Account Created! Redirecting...");
+                goToHome();
+            }
+        }
+
+        function goToHome() {
+            window.location.href = "home.html";
+        }
+
+        function bypassLogin() {
+            window.location.href = "home.html";
         }
     </script>
 </body>
 </html>
-
