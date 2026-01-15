@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
+
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.logo {
+  font-size: 40px;
+  margin-bottom: 30px;
+  color: #38bdf8;
+}
+
+.shiny-btn {
+  padding: 15px 40px;
+  font-size: 18px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 0 20px #3b82f6;
+}
+
+header {
+  width: 100%;
+  padding: 15px;
+  background: #020617;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coins {
+  font-size: 18px;
+  color: #facc15;
+}
+
+main {
+  margin-top: 40px;
+}
+
+.action-btn {
+  display: block;
+  margin: 15px auto;
+  padding: 15px 30px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background: #1e293b;
+  color: white;
+  width: 250px;
+  cursor: pointer;
+  }
