@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamevoo - Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50">
+    <div class="max-w-md mx-auto bg-white min-h-screen p-6 relative">
+        <h2 class="text-2xl font-black text-gray-800 mb-8">My Wallet</h2>
+
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[35px] p-8 text-white shadow-xl mb-8">
+            <p class="text-blue-100 text-sm">Total Balance</p>
+            <h1 class="text-5xl font-black my-2">₹<span id="money-display">0.00</span></h1>
+            <p class="text-xs bg-white/20 inline-block px-3 py-1 rounded-full">Coins: <span id="coin-display-wallet">0</span></p>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="font-bold text-gray-700">Withdrawal Info</h4>
+            <input id="upi-id" type="text" placeholder="Enter UPI ID (e.g. name@paytm)" class="w-full p-4 bg-gray-100 rounded-2xl outline-none border focus:border-blue-400">
+            <button onclick="withdraw()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">WITHDRAW NOW</button>
+            <p class="text-[10px] text-gray-400 text-center">Minimum withdrawal: ₹10 (1000 Coins)</p>
+        </div>
+
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around p-4 rounded-t-[30px]">
+            <a href="home.html" class="text-gray-300"><i class="fas fa-home text-2xl"></i></a>
+            <a href="reward.html" class="text-gray-300"><i class="fas fa-gift text-2xl"></i></a>
+            <a href="wallet.html" class="text-blue-600"><i class="fas fa-wallet text-2xl"></i></a>
+            <a href="profile.html" class="text-gray-300"><i class="fas fa-user text-2xl"></i></a>
+        </nav>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
+
