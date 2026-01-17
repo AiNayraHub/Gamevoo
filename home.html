@@ -3,61 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Home</title>
+    <title>Gamevoo - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .nav-shadow { shadow-[0_-5px_20px_rgba(0,0,0,0.05)]; }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-24">
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
-        <header class="p-5 flex justify-between items-center border-b sticky top-0 bg-white z-50">
+<body class="bg-gray-100 font-sans min-h-screen">
+
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl flex flex-col relative">
+        
+        <header class="p-5 flex justify-between items-center bg-white sticky top-0 z-50 border-b">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white"><i class="fas fa-gamepad"></i></div>
-                <span class="font-bold text-xl text-blue-700">Gamevoo</span>
+                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-100">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <span class="font-bold text-xl text-blue-700 tracking-tight">Gamevoo</span>
             </div>
-            <div class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                <span class="text-yellow-500">🪙</span>
-                <span id="coin-display" class="font-bold text-gray-800 italic">...</span>
+            <div class="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
+                <span class="text-yellow-500 font-bold">🪙</span>
+                <span id="header-coins" class="font-bold text-gray-800">...</span>
+                <a href="profile.html"><i class="fas fa-user-circle text-blue-400 text-xl ml-1"></i></a>
             </div>
         </header>
 
-        <div class="p-6 space-y-5">
-            <a href="https://t.me/yourchannel" target="_blank" class="block bg-gradient-to-r from-sky-400 to-blue-600 rounded-[25px] p-5 text-white relative overflow-hidden shadow-lg transform active:scale-95 transition-all">
+        <div class="p-6 space-y-6 overflow-y-auto pb-24">
+            
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[35px] p-6 shadow-xl text-white relative overflow-hidden">
                 <div class="relative z-10">
-                    <h4 class="font-black text-lg">JOIN TELEGRAM</h4>
-                    <p class="text-xs text-sky-100">Get Daily Gift Codes & Updates</p>
+                    <p class="text-blue-100 text-xs font-semibold uppercase tracking-wider">My Balance</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-4xl font-black" id="home-coins">...</span>
+                        <span class="text-yellow-400 text-2xl">🪙</span>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <span class="bg-white/20 text-[10px] px-3 py-1 rounded-full border border-white/20">₹1.00 = 100 Coins</span>
+                    </div>
                 </div>
-                <i class="fab fa-telegram absolute -right-2 -bottom-2 text-7xl opacity-20"></i>
+                <i class="fas fa-wallet absolute -right-4 -bottom-4 text-8xl text-white/10 transform -rotate-12"></i>
+                <button onclick="window.location.href='wallet.html'" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white text-blue-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg">Redeem</button>
+            </div>
+
+            <a href="https://t.me/your_telegram" target="_blank" class="flex items-center justify-between bg-sky-500 rounded-3xl p-5 text-white shadow-lg shadow-sky-100 transform active:scale-95 transition-all">
+                <div class="flex items-center gap-4">
+                    <i class="fab fa-telegram text-4xl"></i>
+                    <div>
+                        <h4 class="font-black text-sm uppercase">Join Telegram</h4>
+                        <p class="text-[10px] text-sky-100">Get 100+ Daily Gift Codes</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-sky-200"></i>
             </a>
 
             <div class="space-y-4">
-                <h3 class="font-bold text-gray-700 ml-1">Earning Tasks</h3>
-                <div onclick="addCoins(20)" class="flex items-center justify-between p-4 bg-gray-50 rounded-3xl border hover:border-blue-200 cursor-pointer">
+                <h3 class="font-bold text-gray-700 flex items-center gap-2">
+                    <i class="fas fa-bolt text-orange-400"></i> Hot Tasks
+                </h3>
+
+                <div onclick="window.location.href='video-ads.html'" class="flex items-center justify-between p-4 bg-gray-50 rounded-[25px] border border-transparent hover:border-purple-200 cursor-pointer">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600"><i class="fas fa-play"></i></div>
-                        <div><h5 class="font-bold text-sm">Play Games</h5><p class="text-[10px] text-gray-400">Earn 20 Coins</p></div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-sm">
+                            <i class="fas fa-video text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm">Watch Video Ads</h4>
+                            <p class="text-[10px] text-gray-400">Earn 10 Coins / Ad</p>
+                        </div>
                     </div>
-                    <span class="bg-blue-100 text-blue-600 text-[9px] font-bold px-2 py-1 rounded-full italic">ADS</span>
+                    <span class="bg-purple-100 text-purple-600 text-[9px] font-black px-3 py-1 rounded-full italic">ADS</span>
                 </div>
 
-                <div onclick="window.location.href='video-ads.html'" class="flex items-center justify-between p-4 bg-gray-50 rounded-3xl border hover:border-purple-200 cursor-pointer">
-    <div class="flex items-center gap-4">
-        <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600"><i class="fas fa-video"></i></div>
-        <div><h5 class="font-bold text-sm">Watch Video Ads</h5><p class="text-[10px] text-gray-400">Earn 10 Coins / Ad</p></div>
-    </div>
-    <span class="bg-purple-100 text-purple-600 text-[9px] font-bold px-2 py-1 rounded-full italic">ADS</span>
+                <div onclick="window.location.href='reward.html'" class="flex items-center justify-between p-4 bg-gray-50 rounded-[25px] border border-transparent hover:border-orange-200 cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 shadow-sm">
+                            <i class="fas fa-gift text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm">Enter Gift Code</h4>
+                            <p class="text-[10px] text-gray-400">Telegram Daily Codes</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+
+                <div onclick="addCoins(25)" class="flex items-center justify-between p-4 bg-gray-50 rounded-[25px] border border-transparent hover:border-blue-200 cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm">
+                            <i class="fas fa-gamepad text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm">Play Games</h4>
+                            <p class="text-[10px] text-gray-400">Earn 25 Coins / Session</p>
+                        </div>
+                    </div>
+                    <span class="bg-blue-100 text-blue-600 text-[9px] font-black px-3 py-1 rounded-full italic">ADS</span>
                 </div>
             </div>
-        </div>
 
-        <nav class="fixed bottom-0 max-w-md w-full bg-white border-t flex justify-around p-4 rounded-t-[30px] shadow-2xl">
-            <a href="home.html" class="text-blue-600"><i class="fas fa-home text-2xl"></i></a>
-            <a href="reward.html" class="text-gray-300"><i class="fas fa-gift text-2xl"></i></a>
-            <a href="wallet.html" class="text-gray-300"><i class="fas fa-wallet text-2xl"></i></a>
-            <a href="profile.html" class="text-gray-300"><i class="fas fa-user text-2xl"></i></a>
-        </nav>
-    </div>
-
-    <script src="app.js"></script>
-</body>
-</html>
+            <div class="bg-green-50 p-6 rounded-[30px] border border-green-100">
+                <div class="flex items-center gap-4 mb-3">
+                    <i class="fas fa-users text-green-600 text-2xl"></i>
+                    <h4 class="font-bold text-gray-800">Refer your friends!</h4>
+                </div>
+                <p class="text-xs text-gray-500 mb-4">Har dost ke joining par aapko ₹
+                    
