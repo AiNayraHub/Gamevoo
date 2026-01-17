@@ -5,74 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gamevoo - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page { display: none; }
+        .page.active { display: block; }
+        .tab-active { color: #3b82f6 !important; border-top: 3px solid #3b82f6; }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+<body class="bg-gray-50 font-sans">
 
-    <div class="w-full max-w-md bg-white min-h-screen shadow-2xl flex flex-col">
-        <div class="p-5 flex justify-between items-center border-b">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl flex flex-col relative overflow-hidden">
+        
+        <header class="p-5 flex justify-between items-center bg-white sticky top-0 z-50 border-b">
             <div class="flex items-center gap-2">
                 <i class="fas fa-gamepad text-blue-600 text-2xl"></i>
                 <span class="font-bold text-xl text-blue-700">Gamevoo</span>
             </div>
-            <div class="bg-blue-50 px-3 py-1 rounded-full flex items-center gap-2">
-                <span class="text-yellow-500">🪙</span>
-                <span id="coins" class="font-bold">137</span>
+            <div class="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full">
+                <span class="text-yellow-500 font-bold">🪙</span>
+                <span id="header-coins" class="font-bold">0</span>
             </div>
-        </div>
+        </header>
 
-        <div class="p-6 space-y-6">
-            <div class="bg-white border rounded-[30px] p-6 shadow-xl flex justify-between items-center border-l-4 border-l-orange-400">
-                <div>
-                    <p class="text-gray-400 text-sm">Balance:</p>
-                    <h4 class="text-3xl font-black">🪙 <span id="main-coins">137</span></h4>
-                </div>
-                <button onclick="alert('Withdraw logic here')" class="bg-orange-400 text-white px-4 py-2 rounded-xl font-bold text-xs">REWARDS</button>
+        <main id="home-page" class="page active p-6 space-y-6 overflow-y-auto pb-24">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-[30px] p-6 shadow-xl text-white">
+                <p class="text-blue-100 text-xs">Welcome Back!</p>
+                <h4 class="text-4xl font-black mt-2">🪙 <span id="home-coins">0</span></h4>
+                <p class="text-[10px] mt-2 bg-white/20 inline-block px-2 py-1 rounded">100 Coins = ₹1</p>
             </div>
 
             <div class="space-y-4">
-                <div onclick="add(20)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer">
-                    <div class="flex items-center gap-4">
-                        <i class="fas fa-play text-blue-500"></i>
-                        <span class="font-bold text-sm">Play Games</span>
-                    </div>
-                    <span class="text-[10px] font-bold text-blue-400">ADS</span>
+                <h3 class="font-bold text-gray-700">Earnings Tasks</h3>
+                <div onclick="earnCoins(20)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-blue-50">
+                    <div class="flex items-center gap-4"><i class="fas fa-play text-blue-500"></i> <span class="font-bold text-sm">Play & Earn</span></div>
+                    <span class="text-[10px] font-bold text-blue-600">ADS</span>
                 </div>
-
-                <div onclick="add(10)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer">
-                    <div class="flex items-center gap-4">
-                        <i class="fas fa-video text-purple-500"></i>
-                        <span class="font-bold text-sm">Watch Videos</span>
-                    </div>
-                    <span class="text-[10px] font-bold text-purple-400">ADS</span>
-                </div>
-
-                <div onclick="alert('Telegram Joined!')" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer">
-                    <div class="flex items-center gap-4">
-                        <i class="fab fa-telegram text-sky-500"></i>
-                        <span class="font-bold text-sm">Gift Code</span>
-                    </div>
-                    <span class="text-[10px] font-bold text-sky-400">NEW</span>
+                <div onclick="earnCoins(10)" class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-purple-50">
+                    <div class="flex items-center gap-4"><i class="fas fa-video text-purple-500"></i> <span class="font-bold text-sm">Watch Video</span></div>
+                    <span class="text-[10px] font-bold text-purple-600">ADS</span>
                 </div>
             </div>
-        </div>
+        </main>
 
-        <div class="mt-auto p-5 border-t flex justify-around text-gray-300">
-            <i class="fas fa-home text-blue-600 text-2xl"></i>
-            <i class="fas fa-wallet text-2xl"></i>
-            <i class="fas fa-user text-2xl"></i>
-        </div>
+        <main id="wallet-page" class="page p-6 space-y-6">
+            <h3 class="text-2xl font-black text-gray-800">My Wallet</h3>
+            <div class="bg-white border-2 border-dashed border-gray-200 rounded-[30px] p-8 text-center">
+                <p class="text-gray-400 mb-2">Current Balance</p>
+                <h2 class="text-5xl font-black text-gray-800">₹<span id="wallet-money">0.00</span></h2>
+                <p class="text-gray-500 mt-2 text-sm">Total Coins: <span id="wallet-coins">0</span></p>
+            </div>
+            <div class="space-y-4">
+                <input id="upi-id" type="text" placeholder="Enter UPI ID (e.g. name@apl)" class="w-full p-4 bg-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400">
+                <button onclick="withdraw()" class="w-full bg-orange-400 text-white py-4 rounded-2xl font-black shadow-lg">REDEEM NOW</button>
+            </div>
+        </main>
+
+        <main id="profile-page" class="page p-6">
+            <div class="flex flex-col items-center space-y-4 mt-8">
+                <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-4xl text-blue-600 font-bold border-4 border-white shadow-lg">U</div>
+                <h4 id="user-email" class="font-bold text-gray-700">User@email.com</h4>
+                <div class="bg-blue-50 px-6 py-2 rounded-full text-blue-600 font-bold">Verified User</div>
+            </div>
+            <div class="mt-10 space-y-2">
+                <div class="flex justify-between p-4 border-b"><span>Total Coins</span> <span class="font-bold" id="profile-coins">0</span></div>
+                <div class="flex justify-between p-4 border-b"><span>Account Status</span> <span class="text-green-500 font-bold">Active</span></div>
+                <button onclick="logout()" class="w-full mt-10 text-red-500 font-bold">Logout</button>
+            </div>
+        </main>
+
+        <nav class="fixed bottom-0 max-w-md w-full bg-white border-t flex justify-around p-3 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+            <div onclick="switchPage('home', this)" class="flex flex-col items-center gap-1 tab-active cursor-pointer">
+                <i class="fas fa-home text-xl"></i><span class="text-[10px] font-bold">Home</span>
+            </div>
+            <div onclick="switchPage('wallet', this)" class="flex flex-col items-center gap-1 text-gray-300 cursor-pointer">
+                <i class="fas fa-wallet text-xl"></i><span class="text-[10px] font-bold">Wallet</span>
+            </div>
+            <div onclick="switchPage('profile', this)" class="flex flex-col items-center gap-1 text-gray-300 cursor-pointer">
+                <i class="fas fa-user text-xl"></i><span class="text-[10px] font-bold">Profile</span>
+            </div>
+        </nav>
     </div>
 
     <script>
-        let balance = 137;
-        function add(n) {
-            balance += n;
-            document.getElementById('coins').innerText = balance;
-            document.getElementById('main-coins').innerText = balance;
-            alert(n + " Coins earned!");
+        const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
+        const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
+        const supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        let currentCoins = 0;
+        let userId = null;
+
+        // --- DATABASE SE CONNECT KARNE WALA LOGIC ---
+        async function fetchUserData() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                userId = user.id;
+                document.getElementById('user-email').innerText = user.email;
+                
+                // Profiles table se coins lana
+                let { data, error } = await supabase.from('profiles').select('coins').eq('id', userId).single();
+                if (data) {
+                    currentCoins = data.coins;
+                    updateAllUI();
+                } else {
+                    // Agar profile nahi bani, toh create karein
+                    await supabase.from('profiles').insert([{ id: userId, email: user.email, coins: 0 }]);
+                }
+            } else {
+                window.location.href = "login.html"; // Login nahi hai toh wapas bhejo
+            }
         }
+
+        async function earnCoins(amount) {
+            currentCoins += amount;
+            updateAllUI();
+            
+            // Database mein update karein
+            const { error } = await supabase.from('profiles').update({ coins: currentCoins }).eq('id', userId);
+            if (error) alert("Sync Error: " + error.message);
+        }
+
+        function updateAllUI() {
+            document.getElementById('header-coins').innerText = currentCoins;
+            document.getElementById('home-coins').innerText = currentCoins;
+            document.getElementById('wallet-coins').innerText = currentCoins;
+            document.getElementById('profile-coins').innerText = currentCoins;
+            document.getElementById('wallet-money').innerText = (currentCoins / 100).toFixed(2);
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId + '-page').classList.add('active');
+            
+            document.querySelectorAll('nav div').forEach(d => d.classList.remove('tab-active', 'text-gray-300'));
+            document.querySelectorAll('nav div').forEach(d => d.classList.add('text-gray-300'));
+            element.classList.remove('text-gray-300');
+            element.classList.add('tab-active');
+        }
+
+        async function logout() {
+            await supabase.auth.signOut();
+            window.location.href = "login.html";
+        }
+
+        window.onload = fetchUserData;
     </script>
 </body>
-                  </html>
-
+            </html>
+            
