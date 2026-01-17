@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamevoo - Rewards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50">
+    <div class="max-w-md mx-auto bg-white min-h-screen p-6 relative">
+        <div class="flex items-center gap-4 mb-8">
+            <a href="home.html" class="text-gray-600"><i class="fas fa-arrow-left text-xl"></i></a>
+            <h2 class="text-2xl font-black text-gray-800">Rewards</h2>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-orange-50 p-6 rounded-[30px] border border-orange-100 text-center">
+                <i class="fas fa-gift text-4xl text-orange-400 mb-3"></i>
+                <h3 class="font-bold text-gray-800">Redeem Gift Code</h3>
+                <input id="gift-code" type="text" placeholder="Enter Code Here" class="w-full mt-4 p-4 rounded-2xl border-none bg-white shadow-sm outline-none focus:ring-2 focus:ring-orange-300 text-center font-bold">
+                <button onclick="claimCode()" class="w-full mt-4 bg-orange-400 text-white py-4 rounded-2xl font-bold shadow-lg shadow-orange-100 uppercase">Claim Now</button>
+            </div>
+        </div>
+
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around p-4 rounded-t-[30px]">
+            <a href="home.html" class="text-gray-300"><i class="fas fa-home text-2xl"></i></a>
+            <a href="reward.html" class="text-blue-600"><i class="fas fa-gift text-2xl"></i></a>
+            <a href="wallet.html" class="text-gray-300"><i class="fas fa-wallet text-2xl"></i></a>
+            <a href="profile.html" class="text-gray-300"><i class="fas fa-user text-2xl"></i></a>
+        </nav>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
