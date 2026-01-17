@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamevoo - Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50">
+    <div class="max-w-md mx-auto bg-white min-h-screen p-6 relative">
+        <div class="flex flex-col items-center mt-10">
+            <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-3xl text-blue-600 font-bold border-4 border-white shadow-xl">G</div>
+            <h3 id="user-email" class="mt-4 font-bold text-gray-800 tracking-tight">Loading...</h3>
+            <span class="text-xs bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold mt-2">Active Member</span>
+        </div>
+
+        <div class="mt-12 space-y-4">
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
+                <span class="text-gray-500 text-sm">Total Coins</span>
+                <span class="font-black text-gray-800" id="profile-coins">0</span>
+            </div>
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
+                <span class="text-gray-500 text-sm">Account Status</span>
+                <span class="font-bold text-green-500">Verified</span>
+            </div>
+            <button onclick="logout()" class="w-full mt-10 text-red-500 font-bold border-2 border-red-50 py-3 rounded-2xl hover:bg-red-50 transition-all italic">Sign Out</button>
+        </div>
+
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around p-4 rounded-t-[30px]">
+            <a href="home.html" class="text-gray-300"><i class="fas fa-home text-2xl"></i></a>
+            <a href="reward.html" class="text-gray-300"><i class="fas fa-gift text-2xl"></i></a>
+            <a href="wallet.html" class="text-gray-300"><i class="fas fa-wallet text-2xl"></i></a>
+            <a href="profile.html" class="text-blue-600"><i class="fas fa-user text-2xl"></i></a>
+        </nav>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
