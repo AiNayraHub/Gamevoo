@@ -1,34 +1,109 @@
-<script>
-    async function startAd() {
-        const btn = document.getElementById('ad-trigger-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> PROCESSING...';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamevoo - Watch Video Ads</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-black/95 min-h-screen flex items-center justify-center p-6 font-sans">
 
-        // 1. Script trigger (Ad display)
-        console.log("Ad script running...");
+    <div class="bg-white w-full max-w-sm rounded-[40px] p-8 text-center shadow-2xl relative border-t-8 border-blue-600">
+        
+        <a href="home.html" class="absolute top-4 right-5 text-gray-300 hover:text-red-500">
+            <i class="fas fa-times-circle text-2xl"></i>
+        </a>
 
-        // 2. Data save logic (Wait for it)
-        try {
-            // Hum yahan thoda delay de rahe hain ads ke liye
-            setTimeout(async () => {
-                await addCoins(10); // Ye function ab app.js se sahi connect hoga
-                
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> CLAIMED +10';
-                
-                // Confirm UI Update
-                document.getElementById('current-coins-ui').innerText = coins;
-                
-                alert("Mubarak ho! 10 Coins aapke data mein add ho gaye.");
-            }, 3000);
-        } catch (e) {
-            alert("Error: " + e.message);
-            btn.disabled = false;
+        <div class="mb-6">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <i class="fas fa-tv text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-gray-800 uppercase italic">Video Ad Reward</h2>
+            <p class="text-gray-400 text-[10px] mt-1 font-bold tracking-widest uppercase">Click to earn 10 Coins</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-2xl py-4 px-4 mb-6 border border-gray-100">
+            <p class="text-gray-400 text-[10px] font-bold uppercase">Your Current Balance</p>
+            <h3 class="text-2xl font-black text-blue-600">🪙 <span id="local-coins">0</span></h3>
+        </div>
+
+        <button id="ad-btn" onclick="runAdAndReward()" class="w-full bg-blue-600 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-blue-200 active:scale-95 transition-all">
+            <i class="fas fa-play-circle mr-2"></i> WATCH & EARN +10
+        </button>
+
+        <p id="status-msg" class="mt-4 text-[11px] font-bold text-gray-400 uppercase italic"></p>
+    </div>
+
+    <div id="ad-script-container" style="display:none;">
+        <script src="https://pl28507317.effectivegatecpm.com/4c/09/db/4c09dbd43bfbfcd7fd653e9bec70bcb5.js"></script>
+    </div>
+
+    <script>
+        // Supabase direct connection for this page
+        const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
+        const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+        let user_id = null;
+        let user_coins = 0;
+
+        // 1. Page load par data fetch karna
+        async function loadUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                user_id = user.id;
+                let { data } = await supabaseClient.from('profiles').select('coins').eq('id', user_id).single();
+                if (data) {
+                    user_coins = parseInt(data.coins);
+                    document.getElementById('local-coins').innerText = user_coins;
+                }
+            } else {
+                window.location.href = "login.html";
+            }
         }
-    }
 
-    window.onload = async () => {
-        await init(); // app.js ka init function
-        document.getElementById('current-coins-ui').innerText = coins;
-    };
-</script>
+        // 2. Ad chalana aur Coin reward dena
+        async function runAdAndReward() {
+            const btn = document.getElementById('ad-btn');
+            const status = document.getElementById('status-msg');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AD LOADING...';
+            status.innerText = "Please wait, ad is processing...";
+
+            // Ads script trigger (Simulated delay to let the script work)
+            console.log("Ad script is being called...");
+
+            // Logic: 5 second baad coins add honge
+            setTimeout(async () => {
+                const newTotal = user_coins + 10;
+                
+                // Supabase update query
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .update({ coins: newTotal })
+                    .eq('id', user_id);
+
+                if (!error) {
+                    user_coins = newTotal;
+                    document.getElementById('local-coins').innerText = user_coins;
+                    status.innerText = "SUCCESS! +10 COINS ADDED.";
+                    status.classList.add('text-green-500');
+                    alert("Mubarak ho! 10 Coins add ho gaye.");
+                } else {
+                    console.error("DB Error:", error.message);
+                    status.innerText = "Error saving data. Try again.";
+                    status.classList.add('text-red-500');
+                }
+
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-play-circle mr-2"></i> WATCH AGAIN';
+            }, 5000);
+        }
+
+        window.onload = loadUser;
+    </script>
+</body>
+</html>
