@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Coin Test</title>
+    <title>Gamevoo - Earn Coins</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -12,32 +12,32 @@
 
     <div class="bg-white w-full max-w-sm rounded-[40px] p-8 text-center shadow-2xl relative">
         
-        <a href="home.html" class="absolute top-6 right-6 text-gray-400">
+        <a href="home.html" class="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors">
             <i class="fas fa-times-circle text-2xl"></i>
         </a>
 
         <div class="mb-8">
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-database text-3xl"></i>
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <i class="fas fa-coins text-3xl"></i>
             </div>
-            <h2 class="text-2xl font-black text-gray-800 italic">DATA TESTER</h2>
-            <p class="text-gray-400 text-xs mt-1 font-bold">Check if coins are adding to DB</p>
+            <h2 class="text-2xl font-black text-gray-800 italic uppercase">Coin Generator</h2>
+            <p class="text-gray-400 text-[10px] mt-1 font-bold tracking-widest uppercase">Database Sync Test</p>
         </div>
 
         <div class="bg-slate-50 rounded-3xl py-6 px-4 mb-8 border-2 border-dashed border-slate-200">
-            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Database Balance</p>
-            <h3 class="text-4xl font-black text-slate-800 mt-1">🪙 <span id="test-coins">0</span></h3>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Your Current Balance</p>
+            <h3 class="text-4xl font-black text-blue-600 mt-1">🪙 <span id="test-coins">0</span></h3>
         </div>
 
-        <button id="test-btn" onclick="testCoinAdd()" class="w-full bg-green-500 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-green-100 active:scale-95 transition-all">
-            CLICK TO ADD +10 COINS
+        <button id="test-btn" onclick="testCoinAdd()" class="w-full bg-blue-600 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-blue-100 active:scale-95 transition-all">
+            CLAIM +10 COINS
         </button>
 
-        <p id="test-status" class="mt-4 text-xs font-bold text-gray-400 italic uppercase"></p>
+        <p id="test-status" class="mt-4 text-xs font-bold text-gray-400 italic uppercase tracking-tighter"></p>
     </div>
 
     <script>
-        // Direct Database Connection
+        // Supabase Configuration
         const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
         const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
@@ -45,56 +45,73 @@
         let uid = null;
         let currentAmt = 0;
 
-        // Load current data
+        // 1. User ka Data Load Karna (Page khulte hi)
         async function loadData() {
             const { data: { user } } = await supabaseClient.auth.getUser();
+            
             if (user) {
-                uid = user.id;
-                let { data, error } = await supabaseClient.from('profiles').select('coins').eq('id', uid).single();
+                uid = user.id; // Yeh UUID hai (String)
+                
+                let { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('coins')
+                    .eq('id', uid)
+                    .single();
+
                 if (data) {
                     currentAmt = parseInt(data.coins) || 0;
                     document.getElementById('test-coins').innerText = currentAmt;
-                    document.getElementById('test-status').innerText = "Connected to DB";
+                    document.getElementById('test-status').innerText = "Connected to Database";
+                } else if (error) {
+                    document.getElementById('test-status').innerText = "Profile not found!";
+                    console.error("Error fetching coins:", error.message);
                 }
             } else {
-                alert("Please login first!");
+                alert("Login Required!");
                 window.location.href = "login.html";
             }
         }
 
-        // Test Coin Add Function
+        // 2. Coin Add Karne ka Function (Fixed Version)
         async function testCoinAdd() {
             const btn = document.getElementById('test-btn');
             const status = document.getElementById('test-status');
 
+            if (!uid) return alert("User not logged in!");
+
+            // Button Disable karein taaki baar-baar click na ho
             btn.disabled = true;
-            btn.innerText = "UPDATING...";
-            status.innerText = "Sending request to Supabase...";
+            btn.innerText = "UPDATING DB...";
+            status.innerText = "Saving your coins...";
 
-            const newTotal = currentAmt + 10;
+            // Naya total (BigInt/Integer safe math)
+            const newTotal = Number(currentAmt) + 10;
 
-            // Database update
-            const { error } = await supabaseClient
+            // Database Update logic
+            // Yahan hum 'coins' (BigInt) ko Number bhej rahe hain
+            // Aur 'id' (UUID) ko String bhej rahe hain
+            const { data, error } = await supabaseClient
                 .from('profiles')
                 .update({ coins: newTotal })
                 .eq('id', uid);
 
             if (!error) {
-                currentAmt = newTotal;
+                currentAmt = newTotal; // Local ginti update karein
                 document.getElementById('test-coins').innerText = currentAmt;
-                status.innerText = "SUCCESS! DATA UPDATED.";
-                status.style.color = "green";
-                console.log("Database update successful. New Total:", newTotal);
+                status.innerText = "SUCCESS! COINS ADDED.";
+                status.style.color = "#22c55e"; // Green color
             } else {
                 status.innerText = "ERROR: " + error.message;
-                status.style.color = "red";
-                console.error("DB Update Failed:", error.message);
+                status.style.color = "#ef4444"; // Red color
+                console.error("Supabase Error:", error.message);
+                alert("Update failed: " + error.message);
             }
 
             btn.disabled = false;
-            btn.innerText = "CLICK TO ADD +10 COINS";
+            btn.innerText = "CLAIM +10 COINS";
         }
 
+        // Execute load function on startup
         window.onload = loadData;
     </script>
 </body>
