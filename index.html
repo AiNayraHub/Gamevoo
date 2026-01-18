@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamevoo - Loading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes logo-glow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.8)); transform: scale(1.05); }
+        }
+        .animate-glow { animation: logo-glow 2s infinite ease-in-out; }
+        
+        .progress-bar {
+            width: 0%;
+            animation: load 2.5s forwards cubic-bezier(0, 0, 0.2, 1);
+        }
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen flex flex-col items-center justify-center overflow-hidden font-sans">
+
+    <div class="absolute top-[-10%] left-[-10%] w-72 h-72 bg-blue-600/10 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-72 h-72 bg-indigo-600/10 rounded-full blur-[100px]"></div>
+
+    <div class="relative z-10 text-center">
+        <div class="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-[30px] flex items-center justify-center mx-auto mb-8 shadow-2xl animate-glow rotate-3">
+            <i class="fas fa-gamepad text-5xl text-white"></i>
+        </div>
+
+        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">
+            GAME<span class="text-blue-500">VOO</span>
+        </h1>
+        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-12">
+            Play • Earn • Redeem
+        </p>
+
+        <div class="w-64 h-1.5 bg-slate-800 rounded-full mx-auto overflow-hidden relative">
+            <div class="progress-bar h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
+        </div>
+        
+        <p class="mt-4 text-slate-400 text-[11px] font-medium animate-pulse">
+            Connecting to secure server...
+        </p>
+    </div>
+
+    <div class="absolute bottom-10 text-slate-600 text-[9px] font-bold uppercase tracking-widest">
+        Powered by Supabase Security
+    </div>
+
+    <script>
+        // Redirect Logic: 3 Second baad Login page par bhejna
+        setTimeout(() => {
+            // Screen transition effect (Optional: Fade out)
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 500);
+        }, 3000);
+    </script>
+
+</body>
+</html>
