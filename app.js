@@ -23,34 +23,45 @@ async function init() {
         if (data) {
             coins = parseInt(data.coins) || 0;
         } else {
-            // Agar profile row nahi hai toh banao
+            // Nayi profile banao agar nahi hai
             await supabaseClient.from('profiles').upsert([{ id: userId, email: userEmail, coins: 0 }]);
+            coins = 0;
         }
-        syncEverywhere();
+        updateAllUI();
     } else {
         if (!window.location.href.includes('login.html')) window.location.href = "login.html";
     }
 }
 
-function syncEverywhere() {
-    // 1. Coins update karo har jagah
-    const coinElements = ['home-coins', 'wallet-coins', 'profile-coins', 'header-coins', 'current-coins-ui'];
-    coinElements.forEach(id => {
+async function addCoins(amt) {
+    if (!userId) return;
+    let newTotal = Number(coins) + Number(amt);
+    
+    const { error } = await supabaseClient
+        .from('profiles')
+        .update({ coins: newTotal })
+        .eq('id', userId);
+
+    if (!error) {
+        coins = newTotal;
+        updateAllUI();
+        return true;
+    }
+    return false;
+}
+
+function updateAllUI() {
+    const ids = ['header-coins', 'home-coins', 'wallet-coins', 'profile-coins', 'current-coins-ui'];
+    ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerText = coins;
     });
 
-    // 2. Email ID update karo Profile page par
-    const emailElements = ['user-email-display'];
-    emailElements.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = userEmail;
-    });
+    const emailEl = document.getElementById('user-email-display');
+    if (emailEl) emailEl.innerText = userEmail;
 
-    // 3. Rupees calculation (₹1 = 100 coins)
     const moneyEl = document.getElementById('money-display');
     if (moneyEl) moneyEl.innerText = (coins / 100).toFixed(2);
 }
 
 init();
-    
