@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-900 text-white p-6">
+    <div class="text-center mt-10">
+        <div class="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <i class="fas fa-gamepad text-4xl text-white"></i>
+        </div>
+        <h2 class="text-2xl font-bold">Game Zone</h2>
+        <p class="text-gray-400 mt-2">Play for 1 minute to earn 20 coins</p>
+        
+        <div class="mt-10 bg-gray-800 p-10 rounded-[40px] border border-gray-700">
+            <h3 id="timer" class="text-5xl font-black text-orange-500">60</h3>
+            <p class="text-xs mt-2 uppercase tracking-widest">Seconds Left</p>
+        </div>
+        
+        <button id="start-btn" onclick="startGame()" class="mt-10 w-full bg-orange-500 py-4 rounded-2xl font-bold shadow-lg">START PLAYING</button>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function startGame() {
+            let sec = 60;
+            const btn = document.getElementById('start-btn');
+            btn.disabled = true;
+            const timer = setInterval(async () => {
+                sec--;
+                document.getElementById('timer').innerText = sec;
+                if (sec <= 0) {
+                    clearInterval(timer);
+                    await addCoins(20);
+                    alert("Time Up! 20 Coins Added.");
+                    window.location.href = 'home.html';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
