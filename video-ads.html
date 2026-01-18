@@ -3,68 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Watch Ads</title>
+    <title>Gamevoo - Watch Video Ads</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .full-center { display: flex; align-items: center; justify-content: center; min-h-screen; }
-        .ad-card { animation: bounceIn 0.5s ease-out; }
-        @keyframes bounceIn {
-            0% { transform: scale(0.7); opacity: 0; }
-            70% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
+        .ad-card { animation: zoomIn 0.4s ease-out; }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
-<body class="bg-black/90 min-h-screen flex items-center justify-center p-6">
+<body class="bg-black/95 min-h-screen flex items-center justify-center p-6">
 
-    <div class="ad-card bg-white w-full max-w-sm rounded-[40px] p-8 text-center shadow-2xl relative overflow-hidden">
-        <a href="home.html" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600">
+    <div class="ad-card bg-white w-full max-w-sm rounded-[40px] p-8 text-center shadow-[0_0_50px_rgba(59,130,246,0.3)] relative overflow-hidden border-2 border-blue-500/20">
+        
+        <a href="home.html" class="absolute top-5 right-5 text-gray-300 hover:text-gray-600">
             <i class="fas fa-times-circle text-2xl"></i>
         </a>
 
         <div class="mb-6 mt-4">
-            <div class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-4 rotate-3 shadow-inner">
                 <i class="fas fa-play text-3xl"></i>
             </div>
-            <h2 class="text-2xl font-black text-gray-800 uppercase tracking-tight">Watch & Earn</h2>
-            <p class="text-gray-500 text-sm mt-2 font-medium">Click the button below to play ad and receive coins instantly.</p>
+            <h2 class="text-2xl font-black text-gray-800 uppercase italic">Video Rewards</h2>
+            <p class="text-gray-400 text-[11px] mt-2 font-bold uppercase tracking-widest">Watch full ad to get 10 coins</p>
         </div>
 
-        <div class="bg-purple-50 rounded-2xl p-4 mb-6 border border-purple-100">
-            <p class="text-purple-700 font-bold text-lg">Reward: +10 🪙</p>
+        <div class="bg-blue-600 text-white rounded-2xl py-3 px-4 mb-8 flex justify-between items-center shadow-lg shadow-blue-200">
+            <span class="font-black">REWARD:</span>
+            <span class="font-black text-xl">+10 🪙</span>
         </div>
 
-        <p class="text-xs text-gray-400 mb-6 font-bold uppercase italic">Your Balance: <span id="ad-coins" class="text-blue-500">...</span></p>
-
-        <button id="play-btn" onclick="playAdLogic()" class="w-full bg-gradient-to-r from-purple-500 to-blue-600 text-white py-5 rounded-[25px] font-black text-xl shadow-xl hover:scale-105 active:scale-95 transition-all">
-            <i class="fas fa-tv mr-2"></i> PLAY ADS
+        <button id="ad-trigger-btn" onclick="startAd()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 rounded-[25px] font-black text-xl shadow-xl hover:scale-105 active:scale-95 transition-all">
+            <i class="fas fa-bolt mr-2 text-yellow-400"></i> PLAY ADS
         </button>
+
+        <p class="mt-6 text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Your Current Coins: <span id="current-coins-ui" class="text-blue-600">...</span></p>
+    </div>
+
+    <div id="ad-container" style="display:none;">
+        <script src="https://pl28507317.effectivegatecpm.com/4c/09/db/4c09dbd43bfbfcd7fd653e9bec70bcb5.js"></script>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // Specific Ad Logic
-        async function playAdLogic() {
-            const btn = document.getElementById('play-btn');
-            btn.disabled = true;
-            btn.innerText = "Loading Ad...";
+        async function startAd() {
+            const btn = document.getElementById('ad-trigger-btn');
             
-            // Simulating Ad Play (3 Seconds)
-            setTimeout(async () => {
-                alert("Ad Completed! 10 Coins Added to your wallet.");
-                await addCoins(10); // Calling global function from app.js
+            // 1. Button update
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> LOADING AD...';
+
+            try {
+                // 2. Ads show karne ke liye simple logic
+                // Direct script execution handle ho jayega jab user click karega
+                console.log("Loading effectivegatecpm ads...");
+                
+                // 3. 5 second ka wait (taaki ad load ho sake) fir coins add honge
+                setTimeout(async () => {
+                    await addCoins(10); // app.js se connect hai
+                    alert("Congratulations! 10 Coins added successfully.");
+                    
+                    // UI Reset
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-bolt mr-2 text-yellow-400"></i> PLAY AGAIN';
+                    document.getElementById('current-coins-ui').innerText = coins;
+                }, 5000);
+
+            } catch (err) {
+                alert("Ad failed to load. Please try again.");
                 btn.disabled = false;
                 btn.innerText = "PLAY ADS";
-                document.getElementById('ad-coins').innerText = coins; // Update local display
-            }, 3000);
+            }
         }
 
-        // Initialize coins on page load
+        // Coins sync on load
         window.onload = async () => {
             await init(); 
-            document.getElementById('ad-coins').innerText = coins;
+            document.getElementById('current-coins-ui').innerText = coins;
         };
     </script>
 </body>
