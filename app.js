@@ -5,53 +5,69 @@ const supabase = supabase.createClient(SB_URL, SB_KEY);
 let userId = null;
 let coins = 0;
 
+// Initialize User and Coins
 async function init() {
     const { data: { user } } = await supabase.auth.getUser();
+    
     if (user) {
         userId = user.id;
-        if(document.getElementById('user-email')) document.getElementById('user-email').innerText = user.email;
-        loadData();
+        // Database se coins fetch karein
+        let { data, error } = await supabase
+            .from('profiles')
+            .select('coins')
+            .eq('id', userId)
+            .single();
+
+        if (data) {
+            coins = parseInt(data.coins) || 0;
+            syncUI();
+        } else if (error) {
+            console.log("Fetch Error:", error.message);
+        }
     } else {
-        if(!window.location.href.includes('login.html')) window.location.href = "login.html";
+        // Agar login nahi hai toh login page par bhejein
+        if(!window.location.href.includes('login.html')) {
+            window.location.href = "login.html";
+        }
     }
 }
 
-async function loadData() {
-    let { data } = await supabase.from('profiles').select('coins').eq('id', userId).single();
-    if (data) {
-        coins = data.coins;
-        syncUI();
-    }
-}
-
+// Global UI Sync Function
 function syncUI() {
-    if(document.getElementById('coin-display')) document.getElementById('coin-display').innerText = coins;
-    if(document.getElementById('coin-display-wallet')) document.getElementById('coin-display-wallet').innerText = coins;
-    if(document.getElementById('money-display')) document.getElementById('money-display').innerText = (coins/100).toFixed(2);
-    if(document.getElementById('profile-coins')) document.getElementById('profile-coins').innerText = coins;
-    if(document.getElementById('home-coins')) document.getElementById('home-coins').innerText = coins;
+    const ids = ['header-coins', 'home-coins', 'coin-display', 'coin-display-wallet', 'profile-coins', 'current-coins-ui'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerText = coins;
+    });
+    
+    // Wallet money calculation
+    const moneyEl = document.getElementById('money-display');
+    if(moneyEl) moneyEl.innerText = (coins / 100).toFixed(2);
 }
 
-async function addCoins(n) {
-    coins += n;
-    syncUI();
-    await supabase.from('profiles').update({ coins: coins }).eq('id', userId);
-    alert(n + " Coins Added!");
-}
-
-async function claimCode() {
-    const code = document.getElementById('gift-code').value;
-    if(code === "GAMEVOO100") {
-        addCoins(100);
-    } else {
-        alert("Invalid Code!");
+// Database Update Function (Yehi data save karta hai)
+async function addCoins(amount) {
+    if (!userId) {
+        alert("Pehle login karein!");
+        return;
     }
-}
 
-async function logout() {
-    await supabase.auth.signOut();
-    window.location.href = "login.html";
+    let newTotal = parseInt(coins) + parseInt(amount);
+    
+    const { data, error } = await supabase
+        .from('profiles')
+        .update({ coins: newTotal })
+        .eq('id', userId)
+        .select(); // Select lagane se confirm hota hai ki update hua
+
+    if (error) {
+        console.error("Update Error:", error.message);
+        alert("Data save nahi hua: " + error.message);
+    } else {
+        coins = newTotal;
+        syncUI();
+        console.log("Coins updated in DB:", newTotal);
+    }
 }
 
 init();
-
