@@ -1,87 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
-    <meta name="google-site-verification" content="K_pmGriYC3-XgBYVRTGoISYTn-Ugjfx2_jodzLKRN8Y" />
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gamevoo - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-[#F0F4FF] flex items-center justify-center min-h-screen p-4 font-sans">
-
-    <div class="bg-white rounded-[40px] shadow-2xl w-full max-w-sm p-8 text-center border border-white">
-        <div class="mb-6 flex flex-col items-center">
-            <div class="w-20 h-20 bg-gradient-to-tr from-blue-500 via-purple-500 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 mb-4">
-                <i class="fas fa-gamepad text-4xl text-white"></i>
-            </div>
-            <h1 class="text-4xl font-black text-blue-600 tracking-tighter">Gamevoo</h1>
-        </div>
-        
-        <h2 class="text-xl font-bold text-gray-800 mb-2">Sign in to earn coins!</h2>
-        <p class="text-gray-400 text-sm mb-6">Enter details to start earning</p>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-sm rounded-[40px] p-10 shadow-2xl text-center">
+        <h2 class="text-3xl font-black text-blue-600 mb-2 italic">GAMEVOO</h2>
+        <p class="text-gray-400 text-xs font-bold mb-8 uppercase tracking-widest">Login to your account</p>
 
         <div class="space-y-4">
-            <input id="email" type="email" placeholder="Email Address" class="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400 transition-all">
-            <input id="pass" type="password" placeholder="Password" class="w-full px-5 py-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-blue-400 transition-all">
-            
-            <button onclick="handleAuth()" class="w-full bg-blue-600 text-white py-4 rounded-full font-bold text-lg shadow-lg hover:bg-blue-700 active:scale-95 transition-all">
-                Start Now
-            </button>
+            <input id="email" type="email" placeholder="Email Address" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:ring-2 focus:ring-blue-500">
+            <input id="password" type="password" placeholder="Password" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="handleLogin()" id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-100">LOGIN / SIGNUP</button>
         </div>
-
-        <button onclick="bypassLogin()" class="mt-4 text-blue-400 text-xs underline">Skip to Dashboard (Demo)</button>
-
-        <div class="mt-8 space-y-4 text-left border-t pt-6">
-            <div class="flex items-center gap-3 font-bold text-gray-700 text-sm">
-                <div class="bg-blue-500 p-2 rounded-lg text-white"><i class="fas fa-play text-[10px]"></i></div> 1. Play & Earn
-            </div>
-            <div class="flex items-center gap-3 font-bold text-gray-700 text-sm">
-                <div class="bg-purple-500 p-2 rounded-lg text-white"><i class="fas fa-video text-[10px]"></i></div> 2. Watch & Earn
-            </div>
-        </div>
+        <p id="msg" class="mt-4 text-xs font-bold"></p>
     </div>
 
+    <script src="app.js"></script>
     <script>
-        // Supabase Keys
-        const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
-        const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-
-        async function handleAuth() {
+        async function handleLogin() {
             const email = document.getElementById('email').value;
-            const password = document.getElementById('pass').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('msg');
+            const btn = document.getElementById('login-btn');
 
-            if(!email || !password) {
-                alert("Bhai, Email aur Password toh dalo!");
-                return;
-            }
+            if(!email || !password) return alert("Pehle details bharo!");
 
-            // Pehle Sign Up try karte hain (Agar naya user hai toh)
-            const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ email, password });
+            btn.innerText = "Connecting...";
+            
+            // Login attempt
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-            if (signUpError) {
-                // Agar account pehle se hai, toh Login try karte hain
-                const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
-                
-                if (signInError) {
-                    alert("Error: " + signInError.message);
-                } else {
-                    goToHome();
-                }
+            if (error) {
+                // Agar user nahi hai toh Sign Up kardo (Auto-Register)
+                const { error: signUpError } = await supabaseClient.auth.signUp({ email, password });
+                if(signUpError) msg.innerText = signUpError.message;
+                else msg.innerText = "Account Created! Verify email or Login.";
             } else {
-                alert("Account Created! Redirecting...");
-                goToHome();
+                window.location.href = "home.html";
             }
-        }
-
-        function goToHome() {
-            window.location.href = "home.html";
-        }
-
-        function bypassLogin() {
-            window.location.href = "home.html";
+            btn.innerText = "LOGIN / SIGNUP";
         }
     </script>
 </body>
