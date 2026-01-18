@@ -1,39 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Withdraw</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-</head>
-<body class="bg-white p-6 max-w-md mx-auto">
-    <h2 class="text-2xl font-black mb-6">Redeem Coins</h2>
-    <div class="bg-gray-100 p-6 rounded-3xl mb-6">
-        <p class="text-gray-500 text-sm">Available Coins</p>
-        <h3 class="text-3xl font-black text-blue-600" id="wallet-coins">0</h3>
-    </div>
+<div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[40px] text-white shadow-xl shadow-blue-100">
+    <p class="text-xs font-bold opacity-70 uppercase">Redeemable Balance</p>
+    <h2 class="text-5xl font-black mt-2">🪙 <span id="wallet-coins">0</span></h2>
+    <p class="text-[10px] mt-4 font-bold bg-white/20 inline-block px-3 py-1 rounded-full">Value: ₹<span id="money-display">0.00</span></p>
+</div>
 
-    <input id="upi-id" type="text" placeholder="Enter UPI ID" class="w-full p-4 bg-gray-50 rounded-2xl mb-4 border outline-none">
-    <button onclick="requestWithdraw()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Withdraw ₹50 (5000 Coins)</button>
-    <p class="text-center text-xs text-gray-400 mt-4 italic">Minimum Withdrawal: ₹50</p>
-
-    <script src="app.js"></script>
-    <script>
-        async function requestWithdraw() {
-            const upi = document.getElementById('upi-id').value;
-            if (coins < 5000) return alert("Minimum 5000 coins required!");
-            if (!upi) return alert("Enter UPI ID");
-
-            const { error } = await supabaseClient.from('withdrawals').insert([{
-                user_id: userId, amount: 5000, upi_id: upi, status: 'pending'
-            }]);
-            
-            if (!error) {
-                await addCoins(-5000);
-                alert("Withdrawal Request Sent!");
-            }
-        }
-    </script>
-</body>
-</html>
+<div class="mt-8 space-y-4">
+    <input id="upi" type="text" placeholder="Enter UPI ID (e.g. name@apl)" class="w-full p-5 bg-gray-50 rounded-[25px] border-none outline-none focus:ring-2 focus:ring-blue-500">
+    <button onclick="withdraw()" class="w-full bg-blue-600 text-white py-5 rounded-[25px] font-black text-lg">WITHDRAW ₹50</button>
+</div>
+<script src="app.js"></script>
