@@ -1,36 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Rewards</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redeem Gift Code - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-50">
-    <div class="max-w-md mx-auto bg-white min-h-screen p-6 relative">
-        <div class="flex items-center gap-4 mb-8">
-            <a href="home.html" class="text-gray-600"><i class="fas fa-arrow-left text-xl"></i></a>
-            <h2 class="text-2xl font-black text-gray-800">Rewards</h2>
-        </div>
+<body class="bg-slate-50 min-h-screen pb-20">
 
-        <div class="space-y-6">
-            <div class="bg-orange-50 p-6 rounded-[30px] border border-orange-100 text-center">
-                <i class="fas fa-gift text-4xl text-orange-400 mb-3"></i>
-                <h3 class="font-bold text-gray-800">Redeem Gift Code</h3>
-                <input id="gift-code" type="text" placeholder="Enter Code Here" class="w-full mt-4 p-4 rounded-2xl border-none bg-white shadow-sm outline-none focus:ring-2 focus:ring-orange-300 text-center font-bold">
-                <button onclick="claimCode()" class="w-full mt-4 bg-orange-400 text-white py-4 rounded-2xl font-bold shadow-lg shadow-orange-100 uppercase">Claim Now</button>
+    <div class="max-w-md mx-auto p-6 text-center">
+        <div class="mt-10 mb-8">
+            <div class="w-20 h-20 bg-pink-100 text-pink-600 rounded-[30px] flex items-center justify-center mx-auto mb-4 shadow-lg rotate-3">
+                <i class="fas fa-ticket-alt text-3xl"></i>
             </div>
+            <h2 class="text-3xl font-black italic text-slate-800">GIFT CODE</h2>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Enter your secret code below</p>
         </div>
 
-        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around p-4 rounded-t-[30px]">
-            <a href="home.html" class="text-gray-300"><i class="fas fa-home text-2xl"></i></a>
-            <a href="reward.html" class="text-blue-600"><i class="fas fa-gift text-2xl"></i></a>
-            <a href="wallet.html" class="text-gray-300"><i class="fas fa-wallet text-2xl"></i></a>
-            <a href="profile.html" class="text-gray-300"><i class="fas fa-user text-2xl"></i></a>
-        </nav>
+        <div class="bg-white p-8 rounded-[40px] shadow-xl shadow-slate-200 border border-slate-100">
+            <input id="coupon-input" type="text" placeholder="GIFT100" class="w-full p-5 bg-slate-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-pink-500 font-black text-center text-xl uppercase tracking-widest mb-6">
+            
+            <button onclick="claimNow()" id="claim-btn" class="w-full bg-pink-600 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-pink-100 active:scale-95 transition-all">
+                REDEEM NOW
+            </button>
+
+            <p id="redeem-status" class="mt-6 text-sm font-bold italic uppercase"></p>
+        </div>
+
+        <div class="mt-10 p-6 bg-blue-600 rounded-[35px] text-white flex justify-between items-center shadow-xl">
+            <div class="text-left">
+                <p class="text-[10px] font-bold opacity-70 uppercase">Your Wallet</p>
+                <h4 class="text-2xl font-black italic">🪙 <span id="reward-page-coins">0</span></h4>
+            </div>
+            <i class="fas fa-coins text-3xl opacity-20"></i>
+        </div>
     </div>
+
     <script src="app.js"></script>
+    <script>
+        // Update coins specifically for this page
+        setInterval(() => {
+            const el = document.getElementById('reward-page-coins');
+            if(el) el.innerText = coins;
+        }, 1000);
+
+        async function claimNow() {
+            const input = document.getElementById('coupon-input').value;
+            const btn = document.getElementById('claim-btn');
+            const status = document.getElementById('redeem-status');
+
+            if(!input) return alert("Please enter a code!");
+
+            btn.disabled = true;
+            btn.innerText = "CHECKING...";
+
+            // Use the function from app.js
+            const result = await redeemGiftCode(input);
+
+            if(result.success) {
+                status.innerText = result.msg;
+                status.className = "mt-6 text-sm font-bold italic uppercase text-green-500";
+                document.getElementById('coupon-input').value = "";
+            } else {
+                status.innerText = result.msg;
+                status.className = "mt-6 text-sm font-bold italic uppercase text-red-500";
+            }
+
+            btn.disabled = false;
+            btn.innerText = "REDEEM NOW";
+        }
+    </script>
 </body>
-</html>
+                </html>
+    
