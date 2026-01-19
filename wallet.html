@@ -1,37 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet - Gamevoo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .history-card { border-left: 4px solid; }
+        .status-pending { border-left-color: #f59e0b; color: #f59e0b; }
+        .status-success { border-left-color: #10b981; color: #10b981; }
+        .status-rejected { border-left-color: #ef4444; color: #ef4444; }
+    </style>
 </head>
-<body class="bg-gray-50 pb-24">
+<body class="bg-[#f3f4f6] pb-24 font-sans">
+
     <div class="max-w-md mx-auto p-6">
-        <h2 class="text-2xl font-black italic mb-6">MY WALLET</h2>
-        
-        <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden">
-            <p class="text-xs font-bold opacity-70 uppercase tracking-widest">Total Balance</p>
-            <h1 class="text-5xl font-black mt-2 italic">🪙 <span id="wallet-coins">0</span></h1>
-            <div class="mt-6 flex gap-2">
-                <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Approx: ₹<span id="money-display">0.00</span></span>
-            </div>
-            <i class="fas fa-wallet absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12"></i>
+        <div class="flex items-center gap-4 mb-8">
+            <button onclick="window.location.href='home.html'" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-600">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h2 class="text-xl font-black italic text-slate-800">WALLET</h2>
         </div>
 
-        <div class="mt-10 space-y-6">
-            <h3 class="font-bold text-gray-700">Withdraw Options</h3>
-            <div class="bg-white p-6 rounded-[35px] shadow-sm border border-gray-100">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl font-black italic">UPI</div>
-                    <div><h4 class="font-bold text-sm">Direct UPI Transfer</h4><p class="text-[10px] text-gray-400">Minimum: 5000 Coins (₹50)</p></div>
+        <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-800 p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden mb-8">
+            <div class="relative z-10">
+                <p class="text-[10px] font-bold opacity-70 uppercase tracking-[0.2em]">Total Redeemable Coins</p>
+                <h1 class="text-5xl font-black mt-2 italic">🪙 <span id="wallet-coins">0</span></h1>
+                <div class="mt-6 flex items-center gap-2 bg-white/10 w-fit px-4 py-2 rounded-2xl backdrop-blur-md">
+                    <span class="text-xs font-bold italic">Value: ₹<span id="money-display">0.00</span></span>
                 </div>
-                <input id="upi-id" type="text" placeholder="Enter UPI ID (e.g. name@paytm)" class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-blue-500 mb-4 font-bold text-sm">
-                <button onclick="requestWithdraw()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-100">WITHDRAW NOW</button>
             </div>
+            <i class="fas fa-shield-alt absolute -right-4 -bottom-4 text-9xl opacity-10 -rotate-12"></i>
         </div>
-    </div>
-    <script src="app.js"></script>
-</body>
-</html>
+
+        <div class="bg-white p-6 rounded-[35px] shadow-sm border border-slate-100 mb-8">
+            <h3 class="text-sm font-black text-slate-800 mb-4 uppercase tracking-tighter italic">Transfer to UPI</h3>
+            <input id="upi-id" type="text" placeholder="yourname@upi" 
+                class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-indigo-500 outline-none mb-4 font-bold text-slate-700 transition-all">
+            
+            <div class="flex gap-2 mb-6">
+                <button onclick="setAmount(5000)" class="flex-1 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black italic border border-indigo-100 italic">₹50 (5k)</button>
+                <button onclick="setAmount(10000)" class="flex-1 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black italic border border-indigo-100 italic">₹100 (10k)</button>
+            </div>
+
+            <button onclick="requestWithdraw()" id="wd-btn" 
+                class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-indigo-100 active:scale-95 transition-all">
+                WITHDRAW NOW
+            </button>
+            <p class="text-[9px] text-center text-slate-400 mt-4 font-bold uppercase italic">Min. Withdrawal: ₹50 (5000 Coins)</p>
+        </div>
+
+        <div>
+            <h3 class="text-sm font-black text-slate-800 mb-4 uppercase tracking-tighter italic flex items-center gap-2">
+                <i class="fas fa-history text-indigo-600"></i> Transaction History
+            </h3>
+            <div id="history-container" class="space-y-3">
+                <p class="text-center text-xs text-slate-400 py-1
+                
