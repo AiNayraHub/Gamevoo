@@ -1,113 +1,125 @@
-const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
-const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
-const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+// 1. SUPABASE CONNECTION (APKI KEYS ADDED)
+const SUPABASE_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Global Variables
 let userId = null;
 let userEmail = "";
 let coins = 0;
 
-// 1. SYSTEM INITIALIZE (Login, Profile Create, & Block Check)
-async function init() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    
-    if (session) {
-        userId = session.user.id;
-        userEmail = session.user.email;
-        
-        // Profiles table se data fetch karo
+// 2. AUTH & DATABASE INITIALIZATION
+async function initApp() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (user) {
+        userId = user.id;
+        userEmail = user.email;
+        console.log("Connected to Supabase:", userEmail);
+        await syncUserData(); // User ka data database se load karo
+    } else {
+        // Agar user logged in nahi hai toh login.html par bhejo
+        if (!window.location.pathname.includes('login.html')) {
+            window.location.replace('login.html');
+        }
+    }
+}
+
+// 3. SYNC DATA (users_data Table se data lena aur naya user banana)
+async function syncUserData() {
+    try {
         let { data, error } = await supabaseClient
-            .from('profiles')
+            .from('users_data')
             .select('*')
             .eq('id', userId)
             .single();
 
+        // Agar user database table mein nahi hai (Naya User)
+        if (error && error.code === 'PGRST116') {
+            const { data: newUser, error: createError } = await supabaseClient
+                .from('users_data')
+                .insert([{ id: userId, email: userEmail, coins: 0 }])
+                .select()
+                .single();
+            
+            if (createError) throw createError;
+            data = newUser;
+        }
+
         if (data) {
-            // ADMIN BLOCK CHECK: Agar admin ne block kiya hai toh turant bahar phenko
-            if (data.status === 'blocked') {
-                alert("Your account has been suspended by Admin!");
-                await supabaseClient.auth.signOut();
-                window.location.href = "login.html";
-                return;
-            }
-            coins = parseInt(data.coins) || 0;
-        } else {
-            // Agar database mein row nahi hai toh turant banao
-            await supabaseClient.from('profiles').upsert([{ id: userId, email: userEmail, coins: 0 }]);
-            coins = 0;
+            coins = data.coins;
+            updateGlobalUI(); // Poori website ki UI update karo
         }
-        updateAllUI();
-    } else {
-        // Login protect: Agar user logged in nahi hai toh sirf login ya index page hi khulega
-        const p = window.location.pathname;
-        if (!p.includes('login.html') && !p.includes('index.html') && p !== '/') {
-            window.location.href = "login.html";
-        }
+    } catch (err) {
+        console.error("Database Sync Error:", err.message);
     }
 }
 
-// 2. UNIVERSAL COIN ADDER (Adds to DB & Local)
-async function addCoins(amt) {
-    if (!userId) return false;
-    let newTotal = Number(coins) + Number(amt);
-    
-    const { error } = await supabaseClient
-        .from('profiles')
-        .update({ coins: newTotal })
-        .eq('id', userId);
-
-    if (!error) {
-        coins = newTotal;
-        updateAllUI();
-        return true;
-    }
-    console.error("Sync Error:", error.message);
-    return false;
-}
-
-// 3. UI SYNCHRONIZER (Updates every HTML page automatically)
-function updateAllUI() {
-    // Coins update karne ke liye saari IDs
-    const ids = ['header-coins', 'home-coins', 'wallet-coins', 'profile-coins', 'current-coins-ui', 'test-coins'];
-    ids.forEach(id => {
+// 4. GLOBAL UI UPDATE (Coins, Email aur ID har page par set karna)
+function updateGlobalUI() {
+    // Coins update (Sari HTML files ke IDs cover kiye hain)
+    const coinIDs = ['p-coins', 'wallet-coins', 'home-coins', 'gift-coins'];
+    coinIDs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerText = coins;
     });
 
-    // Profile page par email dikhane ke liye
-    const emailEl = document.getElementById('user-email-display');
-    if (emailEl) emailEl.innerText = userEmail;
+    // Email update
+    const emailIDs = ['p-email', 'user-name'];
+    emailIDs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = userEmail;
+    });
 
-    // Wallet money (₹1 = 100 coins)
-    const moneyEl = document.getElementById('money-display');
-    if (moneyEl) moneyEl.innerText = (coins / 100).toFixed(2);
+    // UID update
+    const uidIDs = ['p-uid', 'p-full-uid'];
+    uidIDs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            // Short ID for display, Full ID for profile
+            el.innerText = (id === 'p-uid') ? "UID: " + userId.substring(0, 10) : userId;
+        }
+    });
 }
 
-// 4. GIFT CODE SYSTEM (Connects to Admin Panel)
-async function redeemGiftCode(inputCode) {
-    if (!userId) return { success: false, msg: "Please Login First!" };
+// 5. MODIFY COINS (Add or Subtract with Database Sync)
+async function modifyCoins(amount, type = 'add') {
+    let newBalance = (type === 'add') ? (coins + amount) : (coins - amount);
 
-    // Database se code check karo
-    const { data, error } = await supabaseClient
-        .from('gift_codes')
-        .select('*')
-        .eq('code', inputCode.toUpperCase())
-        .single();
-
-    if (error || !data) {
-        return { success: false, msg: "Invalid or Expired Code!" };
+    if (newBalance < 0) {
+        alert("Balance bahut kam hai!");
+        return false;
     }
 
-    // Reward add karo
-    const reward = parseInt(data.reward);
-    const ok = await addCoins(reward);
-    
-    if (ok) {
-        return { success: true, msg: `Mubarak ho! +${reward} coins mile.` };
+    const { error } = await supabaseClient
+        .from('users_data')
+        .update({ coins: newBalance })
+        .eq('id', userId);
+
+    if (!error) {
+        coins = newBalance;
+        updateGlobalUI();
+        console.log(`${amount} coins ${type}ed successfully!`);
+        return true;
     } else {
-        return { success: false, msg: "Syncing Error!" };
+        alert("Database Error: " + error.message);
+        return false;
     }
 }
 
-// Run the engine
-init();
+// 6. LOGOUT FUNCTION
+async function handleLogout() {
+    if (confirm("Kya aap sach mein Logout karna chahte hain?")) {
+        const { error } = await supabaseClient.auth.signOut();
+        if (!error) {
+            console.log("Logout successful");
+            window.location.replace('login.html');
+        } else {
+            alert("Logout Error: " + error.message);
+        }
+    }
+}
+
+// Start Engine
+initApp();
     
