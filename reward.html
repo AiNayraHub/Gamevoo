@@ -1,76 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redeem Gift Code - Gamevoo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redeem Gift - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-20">
+<body class="bg-[#f8fafc] min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-md mx-auto p-6 text-center">
-        <div class="mt-10 mb-8">
-            <div class="w-20 h-20 bg-pink-100 text-pink-600 rounded-[30px] flex items-center justify-center mx-auto mb-4 shadow-lg rotate-3">
-                <i class="fas fa-ticket-alt text-3xl"></i>
+    <div class="w-full max-w-md">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6 rounded-[32px] shadow-2xl mb-6 flex justify-between items-center text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-[10px] font-bold opacity-80 uppercase tracking-[0.2em]">Available Balance</p>
+                <h3 class="text-3xl font-black italic mt-1">🪙 <span id="reward-page-coins">0</span></h3>
             </div>
-            <h2 class="text-3xl font-black italic text-slate-800">GIFT CODE</h2>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Enter your secret code below</p>
+            <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center relative z-10 backdrop-blur-md">
+                <i class="fas fa-wallet text-xl text-white"></i>
+            </div>
+            <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
         </div>
 
-        <div class="bg-white p-8 rounded-[40px] shadow-xl shadow-slate-200 border border-slate-100">
-            <input id="coupon-input" type="text" placeholder="GIFT100" class="w-full p-5 bg-slate-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-pink-500 font-black text-center text-xl uppercase tracking-widest mb-6">
+        <div class="glass p-8 rounded-[45px] shadow-xl text-center border-b-[8px] border-indigo-100">
+            <div class="mb-8">
+                <div class="w-20 h-20 bg-pink-50 rounded-[28px] flex items-center justify-center mx-auto mb-4 transform rotate-3 shadow-sm">
+                    <i class="fas fa-ticket-alt text-3xl text-pink-500"></i>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 uppercase italic tracking-tighter">Gift <span class="gradient-text">Redeem</span></h2>
+                <p class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Enter code for instant coins</p>
+            </div>
+
+            <div class="relative mb-6">
+                <input id="coupon-input" type="text" placeholder="MEGA500" 
+                    class="w-full p-5 bg-slate-50 rounded-3xl border-2 border-slate-100 outline-none focus:border-pink-400 font-black text-center text-xl uppercase tracking-[0.3em] transition-all text-slate-700">
+            </div>
             
-            <button onclick="claimNow()" id="claim-btn" class="w-full bg-pink-600 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-pink-100 active:scale-95 transition-all">
-                REDEEM NOW
+            <button onclick="claimNow()" id="claim-btn" 
+                class="w-full bg-slate-900 text-white py-5 rounded-3xl font-black text-lg shadow-xl hover:bg-slate-800 active:scale-95 transition-all mb-4">
+                CLAIM REWARD
             </button>
 
-            <p id="redeem-status" class="mt-6 text-sm font-bold italic uppercase"></p>
+            <div id="redeem-status" class="min-h-[20px] text-[11px] font-black uppercase tracking-tight italic"></div>
         </div>
 
-        <div class="mt-10 p-6 bg-blue-600 rounded-[35px] text-white flex justify-between items-center shadow-xl">
-            <div class="text-left">
-                <p class="text-[10px] font-bold opacity-70 uppercase">Your Wallet</p>
-                <h4 class="text-2xl font-black italic">🪙 <span id="reward-page-coins">0</span></h4>
-            </div>
-            <i class="fas fa-coins text-3xl opacity-20"></i>
-        </div>
+        <button onclick="window.location.href='home.html'" class="w-full mt-6 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-indigo-600 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+        </button>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // Update coins specifically for this page
+        // Balance Sync
         setInterval(() => {
             const el = document.getElementById('reward-page-coins');
             if(el) el.innerText = coins;
-        }, 1000);
+        }, 800);
 
         async function claimNow() {
             const input = document.getElementById('coupon-input').value;
             const btn = document.getElementById('claim-btn');
             const status = document.getElementById('redeem-status');
 
-            if(!input) return alert("Please enter a code!");
+            if(!input) {
+                status.innerText = "Please enter a code!";
+                status.className = "text-orange-500 italic font-black uppercase";
+                return;
+            }
 
             btn.disabled = true;
-            btn.innerText = "CHECKING...";
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> VERIFYING...';
 
-            // Use the function from app.js
+            // Function from app.js
             const result = await redeemGiftCode(input);
 
             if(result.success) {
                 status.innerText = result.msg;
-                status.className = "mt-6 text-sm font-bold italic uppercase text-green-500";
+                status.className = "text-green-500 italic font-black uppercase";
                 document.getElementById('coupon-input').value = "";
+                // Confetti or success effect could be added here
             } else {
                 status.innerText = result.msg;
-                status.className = "mt-6 text-sm font-bold italic uppercase text-red-500";
+                status.className = "text-red-500 italic font-black uppercase";
             }
 
             btn.disabled = false;
-            btn.innerText = "REDEEM NOW";
+            btn.innerText = "CLAIM REWARD";
         }
     </script>
 </body>
-                </html>
-    
+</html>
