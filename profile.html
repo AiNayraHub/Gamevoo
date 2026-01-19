@@ -3,129 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Profile - Gamevoo</title>
+    <title>Profile - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #0f172a; color: white; }
-        .glass-card {
+        /* Premium Deep Blue Background */
+        body { 
+            background-color: #0d1117; 
+            background-image: radial-gradient(circle at top right, #1e293b, #0d1117);
+            color: white;
+            min-height: 100-vh;
+        }
+        /* Glassmorphism Cards */
+        .premium-card {
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
         }
-        .gradient-border {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            padding: 2px;
-            border-radius: 32px;
-        }
-        .profile-bg {
-            background: radial-gradient(circle at top right, #312e81, #0f172a);
+        .blue-glow-text {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
-<body class="profile-bg min-h-screen pb-24 font-sans">
+<body class="pb-28 font-sans">
 
     <div class="max-w-md mx-auto p-6">
-        <div class="flex justify-between items-center mb-8">
-            <button onclick="location.href='home.html'" class="w-10 h-10 glass-card flex items-center justify-center">
-                <i class="fas fa-arrow-left text-sm"></i>
+        <div class="flex items-center justify-between mb-10">
+            <button onclick="location.href='home.html'" class="w-10 h-10 premium-card flex items-center justify-center text-blue-400">
+                <i class="fas fa-arrow-left"></i>
             </button>
-            <h2 class="text-sm font-black uppercase tracking-[0.3em] italic text-indigo-400">User Profile</h2>
-            <div class="w-10"></div> </div>
+            <h2 class="text-sm font-black uppercase tracking-[0.3em] italic text-blue-500">Player Profile</h2>
+            <div class="w-10"></div>
+        </div>
 
-        <div class="gradient-border mb-8 shadow-2xl shadow-indigo-500/20">
-            <div class="bg-[#1e1b4b] rounded-[30px] p-8 text-center relative overflow-hidden">
-                <div class="relative z-10">
-                    <div class="w-24 h-24 mx-auto mb-4 p-1 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-full">
-                        <div class="w-full h-full bg-[#1e1b4b] rounded-full flex items-center justify-center">
-                            <i class="fas fa-user-astronaut text-4xl text-indigo-400"></i>
-                        </div>
-                    </div>
-                    <h3 id="p-email" class="text-xl font-black italic tracking-tight">Loading...</h3>
-                    <div class="mt-3 flex justify-center gap-2">
-                        <span class="px-3 py-1 bg-indigo-500/20 text-indigo-400 text-[9px] font-black uppercase rounded-full border border-indigo-500/30">Verified Player</span>
-                        <span id="p-status" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase rounded-full border border-emerald-500/30">Active</span>
+        <div class="premium-card p-8 mb-8 text-center relative overflow-hidden border-t border-blue-500/20">
+            <div class="relative z-10">
+                <div class="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 p-1 shadow-lg shadow-blue-500/20">
+                    <div class="w-full h-full bg-[#0d1117] rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-shield text-4xl text-blue-400"></i>
                     </div>
                 </div>
-                <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-indigo-600/20 blur-3xl rounded-full"></div>
+                <h3 id="p-email" class="text-xl font-black italic tracking-tight text-white">Connecting...</h3>
+                <p id="p-uid" class="text-[9px] font-bold text-blue-500 mt-2 uppercase tracking-widest opacity-70">ID: fetching...</p>
             </div>
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-600/10 blur-3xl rounded-full"></div>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-6">
-            <div class="glass-card p-5 text-center">
-                <p class="text-[9px] font-bold text-indigo-300 uppercase mb-1 tracking-widest">My Balance</p>
-                <h4 class="text-xl font-black italic">🪙 <span id="p-coins">0</span></h4>
+            <div class="premium-card p-5 text-center">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Balance</p>
+                <h4 class="text-xl font-black italic blue-glow-text text-white">🪙 <span id="p-coins">0</span></h4>
             </div>
-            <div class="glass-card p-5 text-center">
-                <p class="text-[9px] font-bold text-indigo-300 uppercase mb-1 tracking-widest">Game Rank</p>
-                <h4 class="text-xl font-black italic text-yellow-500">PRO</h4>
-            </div>
-        </div>
-
-        <div class="glass-card p-6 mb-8">
-            <div class="flex justify-between items-center py-4 border-b border-white/5">
-                <span class="text-[10px] font-bold text-slate-400 uppercase italic">Your Secret ID</span>
-                <span id="p-uid" class="text-[9px] font-black text-indigo-300">Connecting...</span>
-            </div>
-            <div class="flex justify-between items-center py-4">
-                <span class="text-[10px] font-bold text-slate-400 uppercase italic">Server Region</span>
-                <span class="text-[10px] font-black text-white">INDIA (AS-01)</span>
+            <div class="premium-card p-5 text-center">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status</p>
+                <h4 class="text-[10px] font-black text-emerald-400 uppercase">● Active</h4>
             </div>
         </div>
 
-        <button onclick="handleLogout()" id="logout-btn" class="w-full bg-gradient-to-r from-red-600 to-rose-700 text-white py-5 rounded-[24px] font-black text-sm tracking-[0.2em] shadow-xl active:scale-95 transition-all">
-            <i class="fas fa-power-off mr-2"></i> LOGOUT SESSION
+        <div class="premium-card p-6 mb-8">
+            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 italic">Account Information</h3>
+            
+            <div class="flex justify-between items-center py-3 border-b border-white/5">
+                <span class="text-xs font-bold text-slate-300 italic uppercase">User ID</span>
+                <span id="p-full-uid" class="text-[10px] font-black text-blue-400">...</span>
+            </div>
+            
+            <div class="flex justify-between items-center py-3">
+                <span class="text-xs font-bold text-slate-300 italic uppercase">Member Type</span>
+                <span class="text-[10px] font-black text-yellow-500 uppercase">Premium Player</span>
+            </div>
+        </div>
+
+        <button onclick="handleLogout()" id="logout-btn" class="w-full bg-white text-slate-900 py-5 rounded-[22px] font-black text-sm tracking-[0.2em] shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3">
+            <i class="fas fa-power-off"></i> LOGOUT SESSION
         </button>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-[#0f172a]/80 backdrop-blur-xl border-t border-white/5 flex justify-around">
-        <button onclick="location.href='home.html'" class="text-slate-500 hover:text-indigo-400 transition-all"><i class="fas fa-home text-xl"></i></button>
-        <button onclick="location.href='wallet.html'" class="text-slate-500 hover:text-indigo-400 transition-all"><i class="fas fa-wallet text-xl"></i></button>
-        <button onclick="location.href='reward.html'" class="text-slate-500 hover:text-indigo-400 transition-all"><i class="fas fa-gift text-xl"></i></button>
-        <button onclick="location.href='profile.html'" class="text-indigo-500"><i class="fas fa-user-astronaut text-xl"></i></button>
+    <div class="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-[#0d1117]/80 backdrop-blur-xl border-t border-white/5 flex justify-around">
+        <button onclick="location.href='home.html'" class="text-slate-500"><i class="fas fa-home text-xl"></i></button>
+        <button onclick="location.href='wallet.html'" class="text-slate-500"><i class="fas fa-wallet text-xl"></i></button>
+        <button onclick="location.href='reward.html'" class="text-slate-500"><i class="fas fa-gift text-xl"></i></button>
+        <button onclick="location.href='profile.html'" class="text-blue-500"><i class="fas fa-user text-xl"></i></button>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // Data Synchronization
-        function syncProfile() {
-            if (typeof userId !== 'undefined' && userId !== null) {
-                document.getElementById('p-uid').innerText = userId.substring(0, 15) + '...';
-                document.getElementById('p-email').innerText = userEmail || "User@Gamevoo";
-                document.getElementById('p-coins').innerText = coins || 0;
-            } else {
-                setTimeout(syncProfile, 500);
+        // 1. DATABASE CONNECTIVITY & DATA SYNC
+        async function initProfile() {
+            // Wait for app.js to load userId
+            if (typeof userId === 'undefined' || userId === null) {
+                setTimeout(initProfile, 500);
+                return;
             }
+
+            // Display Data
+            document.getElementById('p-uid').innerText = "ID: " + userId.substring(0, 10) + "...";
+            document.getElementById('p-full-uid').innerText = userId;
+            document.getElementById('p-email').innerText = userEmail || "Player Account";
+            document.getElementById('p-coins').innerText = coins || 0;
         }
-        
-        syncProfile();
+
+        // Live Coin Update Loop
         setInterval(() => {
-            if(typeof coins !== 'undefined') document.getElementById('p-coins').innerText = coins;
+            if(typeof coins !== 'undefined') {
+                document.getElementById('p-coins').innerText = coins;
+            }
         }, 1000);
 
-        // Professional Logout Function
+        window.onload = initProfile;
+
+        // 2. FULLY WORKING LOGOUT
         async function handleLogout() {
             const btn = document.getElementById('logout-btn');
-            if(!confirm("Are you sure you want to end this session?")) return;
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> DISCONNECTING...';
+            
+            if(!confirm("Are you sure you want to Logout?")) return;
 
             try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> LOGGING OUT...';
+
+                // Supabase direct logout
                 const { error } = await supabaseClient.auth.signOut();
+                
                 if (error) throw error;
 
-                // Redirect on success
-                window.location.replace("login.html");
+                // Success: Redirect to Login HTML
+                console.log("Logout successful");
+                window.location.replace("login.html"); 
+
             } catch (err) {
-                alert("Error: " + err.message);
+                alert("Logout Error: " + err.message);
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-power-off mr-2"></i> LOGOUT SESSION';
+                btn.innerHTML = '<i class="fas fa-power-off"></i> LOGOUT SESSION';
             }
         }
     </script>
 </body>
 </html>
- 
