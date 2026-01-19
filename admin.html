@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamevoo - Master Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-white min-h-screen font-sans">
+
+    <div class="max-w-6xl mx-auto p-6">
+        <header class="flex justify-between items-center mb-10 bg-slate-800 p-6 rounded-[30px] border border-slate-700 shadow-2xl">
+            <div>
+                <h1 class="text-2xl font-black italic text-blue-500 tracking-tighter">GAMEVOO ADMIN</h1>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Master Control Panel</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="fetchUsers()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl text-xs font-bold transition-all">REFRESH DATA</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-slate-800 p-6 rounded-[30px] border border-slate-700">
+                <p class="text-slate-400 text-xs font-bold uppercase">Total Users</p>
+                <h2 id="total-users" class="text-3xl font-black mt-1">0</h2>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-[30px] border border-slate-700">
+                <p class="text-slate-400 text-xs font-bold uppercase">Total Withdrawal Requests</p>
+                <h2 id="total-withdraws" class="text-3xl font-black mt-1 text-orange-500">0</h2>
+            </div>
+        </div>
+
+        <div class="bg-slate-800 rounded-[35px] border border-slate-700 overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold italic">User Management</h3>
+                <input type="text" id="searchUser" onkeyup="filterUsers()" placeholder="Search Email..." class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-900/50 text-slate-400 text-[10px] uppercase font-black">
+                        <tr>
+                            <th class="p-6">User Email</th>
+                            <th class="p-6">Current Coins</th>
+                            <th class="p-6">Status</th>
+                            <th class="p-6 text-center">Quick Actions (+Coins)</th>
+                            <th class="p-6 text-right">Settings</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body" class="text-sm">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Data Fetching
+        async function fetchUsers() {
+            const tbody = document.getElementById('user-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center animate-pulse">Loading Users Data...</td></tr>';
+
+            const { data: profiles, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) return alert("Error: " + error.message);
+
+            document.getElementById('total-users').innerText = profiles.length;
+            tbody.innerHTML = '';
+
+            profiles.forEach(user => {
+                const isBlocked = user.status === 'blocked';
+                tbody.innerHTML += `
+                    <tr class="border-t border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                        <td class="p-6 font-medium text-slate-300">${user.email}</td>
+                        <td class="p-6 font-black text-blue-400">🪙 ${user.coins || 0}</td>
+                        <td class="p-6">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${isBlocked ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}">
+                                ${user.status || 'Active'}
+                            </span>
+                        </td>
+                        <td class="p-6">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="adjustCoins('${user.id}', ${user.coins}, 100)" class="bg-slate-900 hover:bg-blue-600 p-2 rounded-lg text-[10px] font-bold transition-all">+100</button>
+                                <button onclick="adjustCoins('${user.id}', ${user.coins}, 500)" class="bg-slate-900 hover:bg-blue-600 p-2 rounded-lg text-[10px] font-bold transition-all">+500</button>
+                                <button onclick="adjustCoins('${user.id}', ${user.coins}, 1000)" class="bg-slate-900 hover:bg-blue-600 p-2 rounded-lg text-[10px] font-bold transition-all">+1000</button>
+                            </div>
+                        </td>
+                        <td class="p-6 text-right">
+                            <button onclick="toggleBlock('${user.id}', '${user.status}')" class="text-xs font-black ${isBlocked ? 'text-green-500' : 'text-red-500'} uppercase hover:underline">
+                                ${isBlocked ? 'Unblock' : 'Block User'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Coin Adjustment Logic
+        async function adjustCoins(uid, currentCoins, amountToAdd) {
+            const newTotal = Number(currentCoins) + Number(amountToAdd);
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ coins: newTotal })
+                .eq('id', uid);
+
+            if (!error) {
+                fetchUsers(); // Refresh table
+            } else {
+                alert("Error updating coins!");
+            }
+        }
+
+        // Block/Unblock Logic
+        async function toggleBlock(uid, currentStatus) {
+            const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ status: newStatus })
+                .eq('id', uid);
+
+            if (!error) {
+                fetchUsers();
+            }
+        }
+
+        // Search Filter
+        function filterUsers() {
+            let input = document.getElementById('searchUser').value.toLowerCase();
+            let rows = document.getElementById('user-table-body').getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                let email = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+                rows[i].style.display = email.includes(input) ? "" : "none";
+            }
+        }
+
+        window.onload = fetchUsers;
+    </script>
+</body>
+</html>
+
