@@ -1,4 +1,4 @@
-// 1. SUPABASE CONNECTION (Fixed with your Keys)
+// CONFIGURATION
 const SUPABASE_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -7,15 +7,14 @@ let userId = null;
 let userEmail = "";
 let coins = 0;
 
-// 2. AUTH & INITIALIZATION
+// INITIALIZE APP
 async function initApp() {
     const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (user) {
         userId = user.id;
         userEmail = user.email;
-        console.log("User Logged In:", userEmail);
-        await syncProfileData(); // Profiles table se data fetch karo
+        await syncAllData();
     } else {
         if (!window.location.pathname.includes('login.html')) {
             window.location.replace('login.html');
@@ -23,102 +22,118 @@ async function initApp() {
     }
 }
 
-// 3. PROFILES TABLE SYNC (Fixed Table Name)
-async function syncProfileData() {
+// SYNC ALL TABLES DATA
+async function syncAllData() {
     try {
-        // 'profiles' table se data uthana
-        let { data, error } = await supabaseClient
-            .from('profiles') // <--- Yahan 'profiles' table add kar diya hai
+        // 1. Fetch Profile & Coins
+        let { data: profile, error } = await supabaseClient
+            .from('profiles')
             .select('*')
             .eq('id', userId)
             .maybeSingle();
 
-        // Agar profiles mein user nahi hai toh naya record banayein
-        if (!data) {
-            console.log("Creating new profile for user...");
-            const { data: newProfile, error: insertError } = await supabaseClient
+        if (!profile) {
+            const { data: newProfile } = await supabaseClient
                 .from('profiles')
                 .insert([{ id: userId, email: userEmail, coins: 0 }])
-                .select()
-                .single();
-            
-            if (insertError) throw insertError;
-            data = newProfile;
+                .select().single();
+            profile = newProfile;
         }
 
-        if (data) {
-            coins = data.coins || 0;
-            updateUI(); // UI show karo
+        coins = profile.coins || 0;
+
+        // 2. Update UI across all pages
+        updateMasterUI();
+
+        // 3. If on Wallet Page, Load History
+        if (document.getElementById('history-container') || document.getElementById('history-list')) {
+            loadWithdrawHistory();
         }
+
     } catch (err) {
-        console.error("Profile Fetch Error:", err.message);
+        console.error("Sync Error:", err.message);
     }
 }
 
-// 4. UI UPDATE (Hidden Issue Fix)
-function updateUI() {
-    const coinIDs = ['p-coins', 'wallet-coins', 'home-coins', 'gift-coins'];
-    
+// MASTER UI UPDATE (Har HTML element ko handle karega)
+function updateMasterUI() {
+    // Coins Update
+    const coinIDs = ['p-coins', 'wallet-coins', 'home-coins', 'gift-coins', 'wallet-coins-display'];
     coinIDs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             el.innerText = coins;
-            
-            // Hidden issue fix: Force visibility
-            el.classList.remove('hidden');
+            el.classList.remove('hidden'); // Hidden fix
             el.style.display = 'inline-block';
-            el.style.visibility = 'visible';
-            el.style.opacity = '1';
-
-            // Parent ko bhi show karo
-            if (el.parentElement) {
-                el.parentElement.classList.remove('hidden');
-                el.parentElement.style.display = 'flex';
-            }
         }
     });
 
-    // Email update
-    const emailElements = ['p-email', 'user-name'];
-    emailElements.forEach(id => {
+    // Email & User ID Update
+    const infoIDs = {
+        'p-email': userEmail,
+        'user-name': userEmail.split('@')[0],
+        'p-uid': "UID: " + userId.substring(0, 10),
+        'p-full-uid': userId
+    };
+
+    for (let id in infoIDs) {
         const el = document.getElementById(id);
         if (el) {
-            el.innerText = userEmail;
+            el.innerText = infoIDs[id];
             el.classList.remove('hidden');
         }
-    });
+    }
 }
 
-// 5. MODIFY COINS (For Rewards & Wallet)
-async function modifyCoins(amount, type = 'add') {
-    let newBalance = (type === 'add') ? (coins + amount) : (coins - amount);
-    if (newBalance < 0) {
-        alert("Balance bahut kam hai!");
-        return false;
-    }
+// WITHDRAWAL LOGIC (For wallet.html)
+async function requestWithdraw(rsAmount, coinCost) {
+    if (coins < coinCost) return alert("Paisa kam hai bhai!");
 
-    const { error } = await supabaseClient
-        .from('profiles') // <--- profiles table mein update
-        .update({ coins: newBalance })
+    const { error: updErr } = await supabaseClient
+        .from('profiles')
+        .update({ coins: coins - coinCost })
         .eq('id', userId);
 
-    if (!error) {
-        coins = newBalance;
-        updateUI();
-        return true;
-    } else {
-        alert("Update Error: " + error.message);
-        return false;
+    if (!updErr) {
+        await supabaseClient.from('withdrawals').insert([
+            { user_id: userId, amount: coinCost, status: 'pending' }
+        ]);
+        alert(`₹${rsAmount} Withdrawal Request Sent!`);
+        syncAllData();
     }
 }
 
-// Logout function
+// HISTORY LOGIC (For wallet.html)
+async function loadWithdrawHistory() {
+    const { data, error } = await supabaseClient
+        .from('withdrawals')
+        .select('*')
+        .eq('user_id', userId)
+        .order('id', { ascending: false });
+
+    const container = document.getElementById('history-container') || document.getElementById('history-list');
+    if (container && data) {
+        container.innerHTML = data.map(tr => `
+            <div class="bg-white p-4 rounded-2xl flex justify-between items-center mb-3 shadow-sm border border-gray-100">
+                <div>
+                    <p class="text-sm font-bold">₹${tr.amount/100} Withdrawal</p>
+                    <p class="text-[10px] text-gray-400">${new Date(tr.created_at).toLocaleDateString()}</p>
+                </div>
+                <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full ${tr.status === 'success' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">
+                    ${tr.status}
+                </span>
+            </div>
+        `).join('');
+    }
+}
+
+// LOGOUT
 async function handleLogout() {
-    if (confirm("Logout karna chahte hain?")) {
+    if (confirm("Logout?")) {
         await supabaseClient.auth.signOut();
         window.location.replace('login.html');
     }
 }
 
-// Initialize
 initApp();
+            
