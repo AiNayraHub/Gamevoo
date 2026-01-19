@@ -23,9 +23,8 @@
             <h1 class="font-black uppercase tracking-widest text-sm">Gift Rewards</h1>
             <div class="w-10"></div>
         </div>
-        <i class="fas fa-gift text-7xl opacity-20 absolute -right-4 bottom-10 rotate-12"></i>
         <h2 class="text-3xl font-black italic mb-2 relative z-10">Redeem Code</h2>
-        <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">Enter your secret code to get coins</p>
+        <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">Enter code to get instant coins</p>
     </div>
 
     <div class="px-6 -mt-16 relative z-20">
@@ -36,11 +35,11 @@
                         <i class="fas fa-ticket-alt"></i>
                     </span>
                     <input id="gift-input" type="text" placeholder="ENTER GIFT CODE" 
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-5 pl-12 pr-4 text-center font-black text-indigo-600 focus:border-indigo-500 outline-none transition-all uppercase placeholder:text-slate-300">
+                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-5 pl-12 pr-4 text-center font-black text-indigo-600 focus:border-indigo-500 outline-none transition-all uppercase">
                 </div>
                 
                 <button onclick="redeemGift()" id="redeem-btn" 
-                    class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black text-sm tracking-widest shadow-lg shadow-indigo-100 active:scale-95 transition-all">
+                    class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black text-sm tracking-widest shadow-lg active:scale-95 transition-all">
                     CLAIM REWARD
                 </button>
             </div>
@@ -48,15 +47,11 @@
 
         <div class="mt-8 space-y-4">
             <div class="bg-indigo-50 rounded-2xl p-4 flex items-center gap-4">
-                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-600 shadow-sm">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <p class="text-[10px] font-bold text-indigo-700 leading-tight uppercase">Ek code ko sirf ek hi baar use kiya ja sakta hai.</p>
+                <i class="fas fa-info-circle text-indigo-600"></i>
+                <p class="text-[10px] font-bold text-indigo-700 uppercase">Limit: Ek code ek hi bar use hoga.</p>
             </div>
-            
             <a href="https://t.me/+919559123316" target="_blank" class="block bg-white rounded-2xl p-4 text-center border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Get New Codes on Telegram</p>
-                <p class="text-xs font-bold text-blue-600 mt-1 italic">Join @GamevooSupport</p>
+                <p class="text-xs font-bold text-blue-600">Get New Codes on Telegram</p>
             </a>
         </div>
     </div>
@@ -70,31 +65,36 @@
 
     <script src="app.js"></script>
     <script>
+        // CORE LOGIC - FIXED
         async function redeemGift() {
             const codeInput = document.getElementById('gift-input').value.trim().toUpperCase();
             const btn = document.getElementById('redeem-btn');
 
-            if (!codeInput) return alert("Bhai, pehle code toh dalo!");
-            if (!userId) return alert("Connection error! Refresh karein.");
+            if (!codeInput) return alert("Bhai, code toh dalo!");
+            
+            // Database Connection Check
+            if (typeof userId === 'undefined' || !userId) {
+                return alert("System connect ho raha hai, 2 second ruko.");
+            }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Checking...';
+            btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> Checking...';
 
             try {
                 // 1. Check if user already used THIS specific code
-                const { data: alreadyUsed, error: checkError } = await supabaseClient
+                const { data: usedData, error: usedError } = await supabaseClient
                     .from('redeemed_codes')
                     .select('*')
                     .eq('user_id', userId)
                     .eq('code_text', codeInput);
 
-                if (alreadyUsed && alreadyUsed.length > 0) {
-                    alert("Aap ye code pehle hi use kar chuke hain!");
+                if (usedData && usedData.length > 0) {
+                    alert("Aapne ye code pehle hi use kar liya hai!");
                     resetBtn();
                     return;
                 }
 
-                // 2. Check if code exists in 'gift_codes' table
+                // 2. Check if code is valid in 'gift_codes' table
                 const { data: codeData, error: codeError } = await supabaseClient
                     .from('gift_codes')
                     .select('*')
@@ -102,28 +102,37 @@
                     .single();
 
                 if (codeError || !codeData) {
-                    alert("Invalid Gift Code! Sahi code dalo.");
+                    alert("Galti! Ye code valid nahi hai.");
                     resetBtn();
                     return;
                 }
 
-                // 3. Add Coins to user account
-                const rewardAmount = codeData.amount;
-                const success = await addCoins(rewardAmount); // Ye function app.js mein hai
+                // 3. Update Coins in Database (using your addCoins function from app.js)
+                const amountToAdd = codeData.amount;
+                const newTotal = coins + amountToAdd;
 
-                if (success) {
-                    // 4. Mark this code as used by this user in 'redeemed_codes'
-                    await supabaseClient
-                        .from('redeemed_codes')
-                        .insert([{ user_id: userId, code_text: codeInput }]);
+                const { error: updateError } = await supabaseClient
+                    .from('users_data')
+                    .update({ coins: newTotal })
+                    .eq('id', userId);
 
-                    alert(`Mubarak ho! Aapko ${rewardAmount} coins mil gaye.`);
-                    document.getElementById('gift-input').value = "";
-                }
+                if (updateError) throw updateError;
+
+                // 4. Record that this user used this code
+                await supabaseClient
+                    .from('redeemed_codes')
+                    .insert([{ user_id: userId, code_text: codeInput }]);
+
+                // Success
+                alert(`Mubarak ho! ${amountToAdd} Coins aapke account mein add ho gaye.`);
+                document.getElementById('gift-input').value = "";
+                
+                // Refresh local coins
+                if(typeof coins !== 'undefined') coins = newTotal;
 
             } catch (err) {
                 console.error(err);
-                alert("Something went wrong!");
+                alert("Database Error: " + err.message);
             }
 
             resetBtn();
@@ -136,5 +145,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
