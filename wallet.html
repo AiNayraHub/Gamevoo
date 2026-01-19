@@ -3,59 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet - Gamevoo</title>
+    <title>Wallet - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8fafc; }
-        .wallet-header { background: linear-gradient(135deg, #1e40af, #3b82f6); }
-        .card-shadow { box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1); }
-        .history-card { border-left: 4px solid; }
+        body { background-color: #f1f5f9; }
+        .wallet-card { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+        .amount-btn { transition: all 0.3s; border: 2px solid #e2e8f0; }
+        .amount-btn.active { border-color: #3b82f6; background-color: #eff6ff; color: #1e40af; }
     </style>
 </head>
 <body class="font-sans text-slate-900 pb-28">
 
-    <div class="wallet-header pb-24 pt-10 px-6 rounded-b-[50px] text-white">
+    <div class="wallet-card pb-28 pt-10 px-6 rounded-b-[40px] text-white shadow-xl">
         <div class="flex items-center justify-between mb-8">
             <button onclick="location.href='home.html'" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
-                <i class="fas fa-chevron-left"></i>
+                <i class="fas fa-chevron-left text-sm"></i>
             </button>
-            <h1 class="font-black uppercase tracking-widest text-sm italic">My Wallet</h1>
+            <h1 class="font-black uppercase tracking-widest text-sm italic">Earning Wallet</h1>
             <div class="w-10"></div>
         </div>
 
         <div class="text-center">
-            <p class="text-[10px] font-bold uppercase tracking-[0.3em] opacity-80">Available Balance</p>
+            <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80">Current Balance</p>
             <h2 class="text-5xl font-black mt-2 italic">🪙 <span id="wallet-coins">0</span></h2>
-            <p class="text-xs font-bold mt-2 opacity-90">≈ ₹<span id="money-display">0.00</span></p>
+            <p class="text-sm font-bold mt-2 bg-black/20 inline-block px-4 py-1 rounded-full">Cash Value: ₹<span id="money-val">0.00</span></p>
         </div>
     </div>
 
     <div class="px-6 -mt-12">
-        <div class="bg-white rounded-[35px] p-6 card-shadow mb-8 text-center border border-blue-50">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Fast Payouts</p>
-            <div class="flex gap-3">
-                <input type="number" id="withdraw-amount" placeholder="Enter Coins" class="flex-1 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-4 outline-none focus:border-blue-500 font-bold text-slate-700">
-                <button onclick="requestWithdraw()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-lg shadow-blue-100 active:scale-95 transition-all">Redeem</button>
+        <div class="bg-white rounded-[30px] p-6 shadow-xl border border-blue-50">
+            <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4 text-center">Select Withdrawal Amount</p>
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button onclick="selectAmount(50, 5000)" class="amount-btn py-4 rounded-2xl font-black text-slate-600 bg-slate-50" id="btn-50">₹50 <br><span class="text-[9px] opacity-60">5000 Coins</span></button>
+                <button onclick="selectAmount(100, 10000)" class="amount-btn py-4 rounded-2xl font-black text-slate-600 bg-slate-50" id="btn-100">₹100 <br><span class="text-[9px] opacity-60">10000 Coins</span></button>
+                <button onclick="selectAmount(500, 50000)" class="amount-btn py-4 rounded-2xl font-black text-slate-600 bg-slate-50" id="btn-500">₹500 <br><span class="text-[9px] opacity-60">50000 Coins</span></button>
+                <button onclick="selectAmount(1000, 100000)" class="amount-btn py-4 rounded-2xl font-black text-slate-600 bg-slate-50" id="btn-1000">₹1000 <br><span class="text-[9px] opacity-60">100000 Coins</span></button>
             </div>
-            <p class="text-[9px] text-slate-400 mt-3 font-bold uppercase italic">Minimum Withdrawal: 1000 Coins</p>
+
+            <button onclick="processWithdrawal()" id="withdraw-btn" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-sm tracking-widest shadow-lg shadow-blue-100 active:scale-95 transition-all">
+                WITHDRAW NOW
+            </button>
         </div>
 
-        <div class="flex items-center justify-between mb-4 px-2">
-            <h3 class="text-sm font-black text-slate-800 uppercase italic tracking-tighter">Withdrawal History</h3>
-            <button onclick="loadUserHistory()" class="text-blue-600 text-[10px] font-bold uppercase tracking-widest"><i class="fas fa-sync-alt"></i> Refresh</button>
-        </div>
-
-        <div id="history-list" class="space-y-4">
-            <div class="text-center py-10">
-                <i class="fas fa-spinner animate-spin text-blue-500 text-2xl"></i>
-                <p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Fetching Records...</p>
+        <div class="mt-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-black text-slate-800 uppercase italic">Recent Transactions</h3>
+                <i class="fas fa-history text-slate-400"></i>
+            </div>
+            <div id="history-container" class="space-y-3 text-center py-5">
+                <p class="text-xs font-bold text-slate-400">Loading History...</p>
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 p-5 flex justify-around items-center z-50 rounded-t-[30px]">
+    <div class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t p-5 flex justify-around z-50">
         <button onclick="location.href='home.html'" class="text-slate-300"><i class="fas fa-home text-xl"></i></button>
         <button onclick="location.href='wallet.html'" class="text-blue-600"><i class="fas fa-wallet text-xl"></i></button>
         <button onclick="location.href='reward.html'" class="text-slate-300"><i class="fas fa-ticket-alt text-xl"></i></button>
@@ -64,75 +68,100 @@
 
     <script src="app.js"></script>
     <script>
-        // 1. Data Connection Loop
+        let selectedRs = 0;
+        let selectedCoins = 0;
+
+        function selectAmount(rs, coin) {
+            selectedRs = rs;
+            selectedCoins = coin;
+            // UI Update
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + rs).classList.add('active');
+        }
+
+        // Live Balance Sync
         setInterval(() => {
             if (typeof coins !== 'undefined') {
                 document.getElementById('wallet-coins').innerText = coins;
-                document.getElementById('money-display').innerText = (coins / 100).toFixed(2);
+                document.getElementById('money-val').innerText = (coins / 100).toFixed(2);
             }
         }, 1000);
 
-        // 2. Fixed History Fetching Logic
-        async function loadUserHistory() {
-            const list = document.getElementById('history-list');
+        // Fetch History with Error Handling
+        async function fetchHistory() {
+            if (!userId) return setTimeout(fetchHistory, 1000);
+            
+            const { data, error } = await supabaseClient
+                .from('withdrawals')
+                .select('*')
+                .eq('user_id', userId)
+                .order('id', { ascending: false }); // id use kiya agar created_at nahi hai
 
-            // ID check: Agar app.js abhi connect nahi hua toh wait karo
-            if (typeof userId === 'undefined' || !userId) {
-                console.log("Waiting for database connection...");
-                setTimeout(loadUserHistory, 1000); 
+            const container = document.getElementById('history-container');
+            if (error) {
+                container.innerHTML = `<p class="text-red-500 text-[10px]">Error: ${error.message}</p>`;
                 return;
             }
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('withdrawals')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                if (data && data.length > 0) {
-                    list.innerHTML = ''; // Clear loading
-                    data.forEach(item => {
-                        let statusColor = item.status === 'success' ? 'border-green-500 text-green-600 bg-green-50' : 
-                                          (item.status === 'rejected' ? 'border-red-500 text-red-600 bg-red-50' : 'border-orange-500 text-orange-600 bg-orange-50');
-                        
-                        list.innerHTML += `
-                            <div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm border border-slate-50 history-card ${statusColor.split(' ')[0]}">
-                                <div>
-                                    <p class="text-xs font-black text-slate-700 uppercase italic">₹${(item.amount/100).toFixed(2)} Payout</p>
-                                    <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase">${new Date(item.created_at).toLocaleDateString()}</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${statusColor.split(' ').slice(1).join(' ')}">
-                                        ${item.status}
-                                    </span>
-                                </div>
-                            </div>`;
-                    });
-                } else {
-                    list.innerHTML = '<div class="text-center py-10"><p class="text-[10px] font-black text-slate-400 uppercase italic">No Transactions Found</p></div>';
-                }
-            } catch (err) {
-                console.error("History Error:", err.message);
-                list.innerHTML = `<p class="text-center text-red-500 text-[10px] font-black uppercase">Database Error: ${err.message}</p>`;
+            if (data.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-[10px] uppercase font-bold">No history yet</p>`;
+                return;
             }
+
+            container.innerHTML = '';
+            data.forEach(tr => {
+                const statusColor = tr.status === 'success' ? 'text-green-500 bg-green-50' : 'text-orange-500 bg-orange-50';
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100">
+                        <div class="text-left">
+                            <p class="text-xs font-black italic uppercase text-slate-700">Withdraw ₹${tr.amount/100}</p>
+                            <p class="text-[9px] font-bold text-slate-400 mt-0.5">ID: #${tr.id.toString().slice(-5)}</p>
+                        </div>
+                        <span class="text-[9px] font-black uppercase px-3 py-1 rounded-full ${statusColor}">${tr.status}</span>
+                    </div>`;
+            });
         }
 
-        // Start loading when page opens
-        window.onload = loadUserHistory;
+        async function processWithdrawal() {
+            if (selectedRs === 0) return alert("Pehle amount select karo bhai!");
+            if (coins < selectedCoins) return alert("Balance kam hai!");
 
-        // 3. Simple Withdrawal Request (Basic Logic)
-        async function requestWithdraw() {
-            const amount = document.getElementById('withdraw-amount').value;
-            if(amount < 1000) return alert("Minimum 1000 coins chahiye!");
-            if(amount > coins) return alert("Utne coins nahi hain bhai!");
-            
-            // Aapka withdrawal logic yahan aayega...
-            alert("Request Sent! Processing 24-48 hours.");
+            const btn = document.getElementById('withdraw-btn');
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
+
+            try {
+                // 1. Deduct Coins
+                const newBalance = coins - selectedCoins;
+                const { error: updErr } = await supabaseClient
+                    .from('users_data')
+                    .update({ coins: newBalance })
+                    .eq('id', userId);
+
+                if (updErr) throw updErr;
+
+                // 2. Add to Withdrawal Table
+                const { error: insErr } = await supabaseClient
+                    .from('withdrawals')
+                    .insert([{ 
+                        user_id: userId, 
+                        amount: selectedCoins, 
+                        status: 'pending'
+                    }]);
+
+                if (insErr) throw insErr;
+
+                alert(`₹${selectedRs} ki request bhej di gayi hai!`);
+                coins = newBalance;
+                fetchHistory();
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+            btn.disabled = false;
+            btn.innerText = "WITHDRAW NOW";
         }
+
+        window.onload = fetchHistory;
     </script>
 </body>
-    </html>
-    
+</html>
