@@ -1,55 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Master Admin</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Admin - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-900 text-white min-h-screen font-sans">
+<body class="bg-slate-950 text-slate-200 min-h-screen pb-20">
 
-    <div class="max-w-6xl mx-auto p-6">
-        <header class="flex justify-between items-center mb-10 bg-slate-800 p-6 rounded-[30px] border border-slate-700 shadow-2xl">
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4 bg-slate-900 p-6 rounded-[30px] border border-slate-800">
             <div>
-                <h1 class="text-2xl font-black italic text-blue-500 tracking-tighter">GAMEVOO ADMIN</h1>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Master Control Panel</p>
+                <h1 class="text-3xl font-black italic text-blue-500">GAMEVOO <span class="text-white">BOSS</span></h1>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Full System Access</p>
             </div>
-            <div class="flex gap-4">
-                <button onclick="fetchUsers()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl text-xs font-bold transition-all">REFRESH DATA</button>
-            </div>
-        </header>
+            <button onclick="location.reload()" class="bg-blue-600 px-8 py-3 rounded-2xl font-bold text-xs hover:bg-blue-500 transition-all">REFRESH ALL DATA</button>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-slate-800 p-6 rounded-[30px] border border-slate-700">
-                <p class="text-slate-400 text-xs font-bold uppercase">Total Users</p>
-                <h2 id="total-users" class="text-3xl font-black mt-1">0</h2>
-            </div>
-            <div class="bg-slate-800 p-6 rounded-[30px] border border-slate-700">
-                <p class="text-slate-400 text-xs font-bold uppercase">Total Withdrawal Requests</p>
-                <h2 id="total-withdraws" class="text-3xl font-black mt-1 text-orange-500">0</h2>
+        <div class="bg-slate-900 p-8 rounded-[40px] border border-slate-800 mb-10">
+            <h3 class="text-xl font-black mb-6 italic"><i class="fas fa-ticket-alt mr-2 text-pink-500"></i> CREATE GIFT CODE</h3>
+            <div class="flex flex-col md:flex-row gap-4">
+                <input id="new-code" type="text" placeholder="CODE2024" class="bg-slate-800 border-none p-4 rounded-2xl flex-1 outline-none focus:ring-2 focus:ring-pink-500 font-bold">
+                <input id="new-reward" type="number" placeholder="Coins (e.g. 500)" class="bg-slate-800 border-none p-4 rounded-2xl w-full md:w-48 outline-none focus:ring-2 focus:ring-pink-500 font-bold">
+                <button onclick="generateGiftCode()" class="bg-pink-600 px-10 py-4 rounded-2xl font-black text-sm">CREATE CODE</button>
             </div>
         </div>
 
-        <div class="bg-slate-800 rounded-[35px] border border-slate-700 overflow-hidden shadow-2xl">
-            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
-                <h3 class="font-bold italic">User Management</h3>
-                <input type="text" id="searchUser" onkeyup="filterUsers()" placeholder="Search Email..." class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="bg-slate-900 rounded-[40px] border border-slate-800 mb-10 overflow-hidden">
+            <div class="p-8 border-b border-slate-800 bg-orange-500/5">
+                <h3 class="text-xl font-black italic text-orange-500"><i class="fas fa-university mr-2"></i> PENDING WITHDRAWALS</h3>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-900/50 text-slate-400 text-[10px] uppercase font-black">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-800/50 text-[10px] font-black uppercase text-slate-500">
                         <tr>
-                            <th class="p-6">User Email</th>
-                            <th class="p-6">Current Coins</th>
-                            <th class="p-6">Status</th>
-                            <th class="p-6 text-center">Quick Actions (+Coins)</th>
-                            <th class="p-6 text-right">Settings</th>
+                            <th class="p-6">User ID</th><th class="p-6">Amount</th><th class="p-6">UPI ID</th><th class="p-6">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="user-table-body" class="text-sm">
+                    <tbody id="withdraw-table" class="text-sm">
                         </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 rounded-[40px] border border-slate-800 overflow-hidden">
+            <div class="p-8 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-black italic text-blue-500"><i class="fas fa-users mr-2"></i> USER CONTROL</h3>
+                <input type="text" id="userSearch" onkeyup="searchUsers()" placeholder="Search Email..." class="bg-slate-800 p-3 rounded-xl text-xs outline-none border border-slate-700">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-800/50 text-[10px] font-black uppercase text-slate-500">
+                        <tr>
+                            <th class="p-6">Email</th><th class="p-6">Coins</th><th class="p-6">Status</th><th class="p-6 text-right">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table" class="text-sm"></tbody>
                 </table>
             </div>
         </div>
@@ -57,89 +64,84 @@
 
     <script src="app.js"></script>
     <script>
-        // Data Fetching
-        async function fetchUsers() {
-            const tbody = document.getElementById('user-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center animate-pulse">Loading Users Data...</td></tr>';
+        // 1. Generate Gift Code
+        async function generateGiftCode() {
+            const code = document.getElementById('new-code').value.toUpperCase();
+            const reward = document.getElementById('new-reward').value;
+            if(!code || !reward) return alert("Fill details");
 
-            const { data: profiles, error } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .order('created_at', { ascending: false });
+            const { error } = await supabaseClient.from('gift_codes').insert([{ code, reward: parseInt(reward) }]);
+            if(!error) {
+                alert("Gift Code Created: " + code);
+                document.getElementById('new-code').value = '';
+                document.getElementById('new-reward').value = '';
+            } else { alert("Error: " + error.message); }
+        }
 
-            if (error) return alert("Error: " + error.message);
-
-            document.getElementById('total-users').innerText = profiles.length;
+        // 2. Fetch Withdrawals
+        async function loadWithdrawals() {
+            const { data, error } = await supabaseClient.from('withdrawals').select('*').eq('status', 'pending');
+            const tbody = document.getElementById('withdraw-table');
             tbody.innerHTML = '';
-
-            profiles.forEach(user => {
-                const isBlocked = user.status === 'blocked';
+            data.forEach(req => {
                 tbody.innerHTML += `
-                    <tr class="border-t border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-                        <td class="p-6 font-medium text-slate-300">${user.email}</td>
-                        <td class="p-6 font-black text-blue-400">🪙 ${user.coins || 0}</td>
-                        <td class="p-6">
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${isBlocked ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}">
-                                ${user.status || 'Active'}
-                            </span>
-                        </td>
-                        <td class="p-6">
-                            <div class="flex justify-center gap-2">
-                                <button onclick="adjustCoins('${user.id}', ${user.coins}, 100)" class="bg-slate-900 hover:bg-blue-600 p-2 rounded-lg text-[10px] font-bold transition-all">+100</button>
-                                <button onclick="adjustCoins('${user.id}', ${user.coins}, 500)" class="bg-slate-900 hover:bg-blue-600 p-2 rounded-lg text-[10px] font-bold transition-all">+500</button>
-                                <button onclick="adjustCoins('${user.id}', ${user.coins}, 1000)" class="bg-slate-900 hover:bg-blue-600 p-2 rounded-lg text-[10px] font-bold transition-all">+1000</button>
-                            </div>
-                        </td>
-                        <td class="p-6 text-right">
-                            <button onclick="toggleBlock('${user.id}', '${user.status}')" class="text-xs font-black ${isBlocked ? 'text-green-500' : 'text-red-500'} uppercase hover:underline">
-                                ${isBlocked ? 'Unblock' : 'Block User'}
-                            </button>
-                        </td>
-                    </tr>
-                `;
+                <tr class="border-t border-slate-800 hover:bg-slate-800/50">
+                    <td class="p-6 text-xs text-slate-400">${req.user_id}</td>
+                    <td class="p-6 font-black text-orange-500">₹${req.amount/100}</td>
+                    <td class="p-6 font-bold text-white">${req.upi_id}</td>
+                    <td class="p-6">
+                        <button onclick="updateWithdraw('${req.id}', 'success')" class="bg-green-600/20 text-green-500 px-4 py-2 rounded-xl font-bold text-[10px] mr-2">APPROVE</button>
+                        <button onclick="updateWithdraw('${req.id}', 'rejected')" class="bg-red-600/20 text-red-500 px-4 py-2 rounded-xl font-bold text-[10px]">REJECT</button>
+                    </td>
+                </tr>`;
             });
         }
 
-        // Coin Adjustment Logic
-        async function adjustCoins(uid, currentCoins, amountToAdd) {
-            const newTotal = Number(currentCoins) + Number(amountToAdd);
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ coins: newTotal })
-                .eq('id', uid);
-
-            if (!error) {
-                fetchUsers(); // Refresh table
-            } else {
-                alert("Error updating coins!");
-            }
+        async function updateWithdraw(id, status) {
+            await supabaseClient.from('withdrawals').update({ status }).eq('id', id);
+            loadWithdrawals();
         }
 
-        // Block/Unblock Logic
-        async function toggleBlock(uid, currentStatus) {
-            const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update({ status: newStatus })
-                .eq('id', uid);
-
-            if (!error) {
-                fetchUsers();
-            }
+        // 3. Load Users
+        async function loadUsers() {
+            const { data } = await supabaseClient.from('profiles').select('*').order('coins', {ascending: false});
+            const tbody = document.getElementById('user-table');
+            tbody.innerHTML = '';
+            data.forEach(user => {
+                tbody.innerHTML += `
+                <tr class="border-t border-slate-800 hover:bg-slate-800/40">
+                    <td class="p-6 font-bold">${user.email}</td>
+                    <td class="p-6 text-blue-400 font-black">🪙 ${user.coins}</td>
+                    <td class="p-6"><span class="px-3 py-1 rounded-full text-[9px] font-black ${user.status==='blocked'?'bg-red-500 text-white':'bg-green-500/10 text-green-500'}">${user.status||'active'}</span></td>
+                    <td class="p-6 text-right flex justify-end gap-2">
+                        <button onclick="adjustAdminCoins('${user.id}', ${user.coins}, 1000)" class="bg-blue-600/10 text-blue-500 p-2 rounded-lg font-bold text-[10px]">+1K</button>
+                        <button onclick="blockUser('${user.id}', '${user.status}')" class="bg-red-500/10 text-red-500 p-2 rounded-lg font-bold text-[10px] uppercase">${user.status==='blocked'?'Unblock':'Block'}</button>
+                    </td>
+                </tr>`;
+            });
         }
 
-        // Search Filter
-        function filterUsers() {
-            let input = document.getElementById('searchUser').value.toLowerCase();
-            let rows = document.getElementById('user-table-body').getElementsByTagName('tr');
+        async function adjustAdminCoins(uid, current, add) {
+            await supabaseClient.from('profiles').update({ coins: current + add }).eq('id', uid);
+            loadUsers();
+        }
+
+        async function blockUser(uid, status) {
+            const newStatus = status === 'blocked' ? 'active' : 'blocked';
+            await supabaseClient.from('profiles').update({ status: newStatus }).eq('id', uid);
+            loadUsers();
+        }
+
+        function searchUsers() {
+            let input = document.getElementById('userSearch').value.toLowerCase();
+            let rows = document.getElementById('user-table').getElementsByTagName('tr');
             for (let i = 0; i < rows.length; i++) {
                 let email = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
                 rows[i].style.display = email.includes(input) ? "" : "none";
             }
         }
 
-        window.onload = fetchUsers;
+        window.onload = () => { loadWithdrawals(); loadUsers(); };
     </script>
 </body>
 </html>
-
