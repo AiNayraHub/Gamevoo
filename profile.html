@@ -3,137 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - Earning Pro</title>
+    <title>My Account - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f3f4f6; }
+        body { background-color: #f8fafc; }
         .profile-header { background: linear-gradient(135deg, #1e40af, #3b82f6); }
-        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .premium-shadow { box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1); }
     </style>
 </head>
-<body class="font-sans text-slate-900">
+<body class="font-sans text-slate-900 pb-28">
 
-    <div class="profile-header pb-24 pt-8 px-6 rounded-b-[40px] text-white">
-        <div class="flex items-center justify-between mb-6">
-            <button onclick="location.href='home.html'" class="text-white text-lg">
-                <i class="fas fa-arrow-left"></i>
+    <div class="profile-header pb-28 pt-10 px-6 rounded-b-[50px] text-white">
+        <div class="flex items-center justify-between mb-8">
+            <button onclick="location.href='home.html'" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+                <i class="fas fa-chevron-left text-sm"></i>
             </button>
-            <h1 class="font-bold text-lg uppercase tracking-wider">Account Settings</h1>
-            <div class="w-5"></div>
+            <h1 class="font-black uppercase tracking-widest text-sm">Profile Settings</h1>
+            <div class="w-10"></div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-white/20 rounded-full border-2 border-white/50 flex items-center justify-center text-3xl">
-                <i class="fas fa-user"></i>
+        <div class="flex items-center gap-5">
+            <div class="w-20 h-20 bg-white/10 rounded-3xl border-2 border-white/30 flex items-center justify-center shadow-2xl overflow-hidden">
+                <i class="fas fa-user-tie text-4xl"></i>
             </div>
-            <div>
-                <h2 id="p-email" class="text-xl font-bold tracking-tight text-white">Loading...</h2>
-                <p id="p-uid" class="text-[10px] text-blue-100 font-medium">UID: Connecting...</p>
+            <div class="flex-1">
+                <h2 id="p-email" class="text-xl font-black italic truncate">Fetching User...</h2>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <p class="text-[10px] text-blue-100 font-bold uppercase tracking-tighter" id="p-uid">Connecting...</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="px-6 -mt-16">
-        <div class="bg-white rounded-3xl p-6 card-shadow flex justify-between items-center mb-6">
+    <div class="px-6 -mt-20">
+        <div class="bg-white rounded-[35px] p-8 premium-shadow flex justify-between items-center mb-6 border border-blue-50">
             <div>
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Earnings</p>
-                <h3 class="text-3xl font-black text-slate-800 mt-1">🪙 <span id="p-coins">0</span></h3>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Available Balance</p>
+                <h3 class="text-4xl font-black text-slate-800 mt-1 italic">🪙 <span id="p-coins">0</span></h3>
             </div>
-            <button onclick="location.href='wallet.html'" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md shadow-blue-200">REDEEM</button>
+            <button onclick="location.href='wallet.html'" class="bg-blue-600 text-white px-6 py-3 rounded-2xl text-xs font-black shadow-lg shadow-blue-200 uppercase italic">Redeem</button>
         </div>
 
-        <div class="bg-white rounded-3xl p-6 card-shadow space-y-5">
-            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-shield-alt text-blue-600"></i>
-                    <span class="text-sm font-semibold text-slate-600">Account Status</span>
+        <div class="bg-white rounded-[35px] p-4 premium-shadow space-y-1">
+            
+            <a href="https://t.me/+919559123316" target="_blank" class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-3xl transition-all">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center text-xl shadow-sm">
+                        <i class="fab fa-telegram-plane"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-700 italic">Customer Support</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Help Desk Telegram</p>
+                    </div>
                 </div>
-                <span class="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase">Active</span>
+                <i class="fas fa-external-link-alt text-slate-300 text-xs"></i>
+            </a>
+
+            <div class="flex items-center justify-between p-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-xl shadow-sm">
+                        <i class="fas fa-id-badge"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-700 italic">User Secret ID</p>
+                        <p id="p-full-uid" class="text-[10px] text-slate-400 font-mono">Loading UID...</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-fingerprint text-blue-600"></i>
-                    <span class="text-sm font-semibold text-slate-600">Full ID</span>
+            <div class="flex items-center justify-between p-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl shadow-sm">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-700 italic">Verification Status</p>
+                        <p class="text-[10px] text-emerald-500 font-black uppercase">Verified Member</p>
+                    </div>
                 </div>
-                <span id="p-full-uid" class="text-[10px] font-bold text-slate-400 break-all ml-4">...</span>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-envelope text-blue-600"></i>
-                    <span class="text-sm font-semibold text-slate-600">Email Sync</span>
-                </div>
-                <span class="text-[10px] font-bold text-slate-400">Success</span>
             </div>
         </div>
 
-        <div class="mt-8 space-y-4">
-            <button onclick="handleLogout()" id="logout-btn" class="w-full bg-white border-2 border-red-50 text-red-600 py-4 rounded-2xl font-bold text-md flex items-center justify-center gap-3 transition-all active:bg-red-50">
-                <i class="fas fa-sign-out-alt"></i> Logout from App
+        <div class="mt-10 mb-5">
+            <button onclick="handleLogout()" id="logout-btn" class="w-full bg-white border-2 border-red-50 text-red-500 py-5 rounded-[30px] font-black text-sm tracking-widest flex items-center justify-center gap-3 active:scale-95 transition-all shadow-sm">
+                <i class="fas fa-power-off"></i> LOGOUT FROM SESSION
             </button>
-            <p class="text-center text-[10px] text-slate-400 font-medium">App Version 1.0.4 (Stable)</p>
+            <p class="text-center text-[10px] text-slate-400 font-black mt-6 uppercase tracking-[0.3em]">Gamevoo Earning App</p>
         </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-around items-center">
-        <button onclick="location.href='home.html'" class="text-slate-400"><i class="fas fa-home text-xl"></i></button>
-        <button onclick="location.href='wallet.html'" class="text-slate-400"><i class="fas fa-wallet text-xl"></i></button>
-        <button onclick="location.href='reward.html'" class="text-slate-400"><i class="fas fa-gift text-xl"></i></button>
+    <div class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 p-5 flex justify-around items-center z-50 rounded-t-[30px]">
+        <button onclick="location.href='home.html'" class="text-slate-300"><i class="fas fa-home text-xl"></i></button>
+        <button onclick="location.href='wallet.html'" class="text-slate-300"><i class="fas fa-wallet text-xl"></i></button>
+        <button onclick="location.href='reward.html'" class="text-slate-300"><i class="fas fa-gift text-xl"></i></button>
         <button onclick="location.href='profile.html'" class="text-blue-600"><i class="fas fa-user text-xl"></i></button>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // 1. Data Connect Function
-        function loadProfileData() {
+        // 1. Database Connection Sync
+        function fetchAndFillProfile() {
             if (typeof userId !== 'undefined' && userId !== null) {
-                document.getElementById('p-uid').innerText = "UID: " + userId.substring(0, 10) + "...";
+                // Fill Email
+                document.getElementById('p-email').innerText = userEmail || "Earning Player";
+                // Fill UID
+                document.getElementById('p-uid').innerText = "UID: " + userId.substring(0, 10);
                 document.getElementById('p-full-uid').innerText = userId;
-                document.getElementById('p-email').innerText = userEmail || "Earning User";
+                // Fill Balance
                 document.getElementById('p-coins').innerText = coins || 0;
             } else {
-                // Wait for app.js connection
-                setTimeout(loadProfileData, 500);
+                // If app.js not ready, try again
+                setTimeout(fetchAndFillProfile, 500);
             }
         }
 
-        // Live Coin Sync
+        // Live Balance Refresh (Every 1 second)
         setInterval(() => {
             if(typeof coins !== 'undefined') {
                 document.getElementById('p-coins').innerText = coins;
             }
         }, 1000);
 
-        window.onload = loadProfileData;
+        window.onload = fetchAndFillProfile;
 
-        // 2. Fully Working Logout Logic
+        // 2. Full Working Logout
         async function handleLogout() {
-            const btn = document.getElementById('logout-btn');
+            const logoutBtn = document.getElementById('logout-btn');
             
-            if(!confirm("Bhai, kya aap sach mein logout karna chahte hain?")) return;
+            if(!confirm("Bhai, kya aap logout karna chahte hain?")) return;
 
             try {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Processing...';
+                logoutBtn.disabled = true;
+                logoutBtn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> DISCONNECTING...';
 
-                // Supabase se logout
+                // Real Supabase Logout
                 const { error } = await supabaseClient.auth.signOut();
                 
                 if (error) throw error;
 
-                // Success: Redirect to Login HTML
-                console.log("Logout successful");
+                // On Success: Clear history & go to login
+                console.log("Logged out successfully");
                 window.location.replace("login.html"); 
 
             } catch (err) {
-                alert("Logout Error: " + err.message);
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout from App';
+                alert("Logout failed: " + err.message);
+                logoutBtn.disabled = false;
+                logoutBtn.innerHTML = '<i class="fas fa-power-off"></i> LOGOUT FROM SESSION';
             }
         }
     </script>
 </body>
-</html>
+    </html>
+    
