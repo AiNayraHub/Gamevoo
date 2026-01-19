@@ -3,65 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet - Gamevoo</title>
+    <title>Wallet - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 pb-20">
+<body class="bg-gray-50 pb-24 font-sans">
 
     <div class="max-w-md mx-auto p-6">
-        <div class="bg-indigo-600 p-8 rounded-[35px] text-white shadow-xl mb-6">
-            <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">Available Coins</p>
-            <h1 class="text-5xl font-black mt-2 italic">🪙 <span id="wallet-coins">0</span></h1>
-            <p class="mt-4 text-xs font-bold bg-white/20 inline-block px-3 py-1 rounded-full">
-                Value: ₹<span id="money-display">0.00</span>
-            </p>
+        <div class="flex items-center gap-4 mb-8">
+            <button onclick="window.location.href='home.html'" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-600">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h2 class="text-xl font-black italic text-slate-800 uppercase">My Wallet</h2>
         </div>
 
-        <div class="bg-white p-6 rounded-[30px] shadow-sm border border-gray-100 mb-8">
-            <h3 class="font-black text-gray-800 mb-4 italic uppercase text-sm">Withdraw to UPI</h3>
-            <input id="upi-id" type="text" placeholder="example@upi" 
-                class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-indigo-500 mb-4 font-bold">
+        <div class="bg-indigo-600 p-8 rounded-[40px] text-white shadow-xl mb-8 relative overflow-hidden">
+            <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Available Balance</p>
+            <h1 class="text-5xl font-black mt-2 italic">🪙 <span id="wallet-coins">0</span></h1>
+            <p class="mt-4 text-xs font-bold bg-white/20 inline-block px-4 py-1 rounded-full italic">
+                Value: ₹<span id="money-display">0.00</span>
+            </p>
+            <i class="fas fa-wallet absolute -right-5 -bottom-5 text-9xl opacity-10 -rotate-12"></i>
+        </div>
+
+        <div class="bg-white p-6 rounded-[35px] shadow-sm border border-gray-100 mb-8">
+            <h3 class="text-sm font-black text-slate-800 mb-4 uppercase italic">Withdrawal to UPI</h3>
             
-            <button onclick="processWithdraw()" id="wd-btn" 
-                class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">
-                WITHDRAW ₹50 (5000 Coins)
-            </button>
+            <div class="space-y-4">
+                <input id="upi-id" type="text" placeholder="yourname@upi" 
+                    class="w-full p-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-indigo-500 outline-none font-bold transition-all">
+                
+                <button onclick="handleWithdraw()" id="wd-btn" 
+                    class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black text-lg shadow-lg shadow-indigo-100 active:scale-95 transition-all">
+                    WITHDRAW ₹50 (5000 Coins)
+                </button>
+            </div>
+            <p class="text-[9px] text-center text-slate-400 mt-4 font-bold uppercase italic">Minimum Payout: 5000 Coins</p>
         </div>
 
         <div>
-            <h3 class="font-black text-gray-800 mb-4 italic uppercase text-sm">Transaction History</h3>
+            <h3 class="text-sm font-black text-slate-800 mb-4 uppercase italic flex items-center gap-2">
+                <i class="fas fa-history text-indigo-600"></i> Transaction History
+            </h3>
             <div id="history-list" class="space-y-3">
-                <p class="text-center text-gray-400 text-[10px] font-bold py-10 uppercase">Fetching your data...</p>
+                <p class="text-center text-slate-400 text-[10px] font-bold py-10 uppercase animate-pulse">Syncing with server...</p>
             </div>
         </div>
     </div>
 
+    <div class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md p-4 flex justify-around border-t border-gray-100">
+        <button onclick="location.href='home.html'" class="text-gray-400"><i class="fas fa-home text-xl"></i></button>
+        <button onclick="location.href='wallet.html'" class="text-indigo-600"><i class="fas fa-wallet text-xl"></i></button>
+        <button onclick="location.href='reward.html'" class="text-gray-400"><i class="fas fa-ticket-alt text-xl"></i></button>
+        <button onclick="location.href='profile.html'" class="text-gray-400"><i class="fas fa-user text-xl"></i></button>
+    </div>
+
     <script src="app.js"></script>
     <script>
-        // 1. DATA REFRESH LOOP (Taaki data hamesha dikhe)
-        function refreshWalletUI() {
+        // 1. Live Balance Sync (Har 1 sec mein update karega)
+        setInterval(() => {
             if (typeof coins !== 'undefined') {
                 document.getElementById('wallet-coins').innerText = coins;
                 document.getElementById('money-display').innerText = (coins / 100).toFixed(2);
             }
-        }
-        setInterval(refreshWalletUI, 500); // Har aadhe second mein check karega
+        }, 1000);
 
-        // 2. WITHDRAWAL LOGIC
-        async function processWithdraw() {
+        // 2. Load History when user is ready
+        async function initWallet() {
+            if (!userId) {
+                setTimeout(initWallet, 1000);
+                return;
+            }
+            fetchHistory();
+        }
+        window.onload = initWallet;
+
+        // 3. Withdrawal Logic
+        async function handleWithdraw() {
             const upi = document.getElementById('upi-id').value;
             const btn = document.getElementById('wd-btn');
 
-            if (!userId) return alert("Please wait, connecting to server...");
-            if (coins < 5000) return alert("Balance kam hai! ₹50 (5000 coins) minimum chahiye.");
-            if (!upi.includes('@')) return alert("Sahi UPI ID dalein!");
+            if (coins < 5000) return alert("Bhai, balance kam hai! Kam se kam 5000 coins chahiye.");
+            if (!upi || !upi.includes('@')) return alert("Sahi UPI ID dalo!");
 
             btn.disabled = true;
             btn.innerText = "Processing...";
 
-            // Database mein request bhejna
+            // Insert Request in Database
             const { error } = await supabaseClient.from('withdrawals').insert([{
                 user_id: userId,
                 amount: 5000,
@@ -70,54 +99,59 @@
             }]);
 
             if (!error) {
-                // Coins deduct karna
-                const success = await addCoins(-5000); 
-                if(success) {
-                    alert("Request Sent! 5000 Coins Deducted.");
-                    location.reload(); // Page reload taaki history update ho jaye
+                // Deduct Coins via app.js
+                const success = await addCoins(-5000);
+                if (success) {
+                    alert("Request Successful! History check karein.");
+                    fetchHistory();
                 }
             } else {
                 alert("Error: " + error.message);
-                btn.disabled = false;
-                btn.innerText = "WITHDRAW ₹50";
             }
+            btn.disabled = false;
+            btn.innerText = "WITHDRAW ₹50";
         }
 
-        // 3. HISTORY FETCH (Init hone ke baad)
-        async function getHistory() {
-            // Wait for userId to be available
-            if(!userId) {
-                setTimeout(getHistory, 1000);
-                return;
-            }
-
+        // 4. History Fetch Logic
+        async function fetchHistory() {
+            const list = document.getElementById('history-list');
+            
             const { data, error } = await supabaseClient
                 .from('withdrawals')
                 .select('*')
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false });
 
-            const list = document.getElementById('history-list');
+            if (error) {
+                list.innerHTML = `<p class="text-center text-red-400 text-[10px] font-bold">Error loading data</p>`;
+                return;
+            }
+
             if (data && data.length > 0) {
                 list.innerHTML = '';
                 data.forEach(item => {
-                    let statusColor = item.status === 'success' ? 'text-green-500' : (item.status === 'rejected' ? 'text-red-500' : 'text-orange-500');
+                    let statusColor = "text-orange-500";
+                    let bgColor = "border-orange-500";
+                    
+                    if(item.status === 'success') { statusColor = "text-green-500"; bgColor = "border-green-500"; }
+                    if(item.status === 'rejected') { statusColor = "text-red-500"; bgColor = "border-red-500"; }
+
                     list.innerHTML += `
-                        <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border-l-4 ${item.status === 'success' ? 'border-green-500' : 'border-orange-500'}">
+                        <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border-l-4 ${bgColor}">
                             <div>
-                                <p class="font-black text-xs italic uppercase">₹${item.amount/100} Withdrawal</p>
+                                <p class="font-black text-xs italic uppercase text-slate-700">Withdraw ₹${item.amount/100}</p>
                                 <p class="text-[9px] font-bold text-gray-400">${new Date(item.created_at).toLocaleDateString()}</p>
                             </div>
-                            <p class="text-[10px] font-black uppercase italic ${statusColor}">${item.status}</p>
+                            <div class="text-right">
+                                <p class="text-[10px] font-black uppercase italic ${statusColor}">${item.status}</p>
+                                <p class="text-[8px] text-gray-300 font-bold">${item.upi_id}</p>
+                            </div>
                         </div>`;
                 });
             } else {
-                list.innerHTML = '<p class="text-center text-gray-400 text-[10px] font-bold py-5">No Transactions Yet</p>';
+                list.innerHTML = `<p class="text-center text-gray-400 text-[10px] font-bold py-10 uppercase italic">No History Found</p>`;
             }
         }
-        
-        // Load history after 2 seconds
-        setTimeout(getHistory, 2000);
     </script>
 </body>
 </html>
