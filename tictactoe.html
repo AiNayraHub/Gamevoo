@@ -1,1 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Gamevoo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f4f8; }
+        .cell { 
+            aspect-ratio: 1/1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 3rem; 
+            font-weight: 900; 
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cell:active { transform: scale(0.9); }
+        .cell.x { color: #4f46e5; }
+        .cell.o { color: #ef4444; }
+        .win-line { animation: winPulse 0.5s infinite alternate; }
+        @keyframes winPulse { from { opacity: 1; } to { opacity: 0.5; } }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
 
+    <div class="p-4 flex justify-between items-center bg-white border-b border-slate-100">
+        <button onclick="window.location.href='games.html'" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 border border-slate-100">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="text-center">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Time Reward</p>
+            <p id="timer" class="text-indigo-600 font-black italic">30s</p>
+        </div>
+        <div class="bg-amber-100 px-4 py-2 rounded-2xl border border-amber-200">
+            <span class="text-amber-700 text-xs font-black italic">🪙 <span id="game-coins">0</span></span>
+        </div>
+    </div>
+
+    <div class="mt-8 text-center">
+        <h2 id="status" class="text-2xl font-black text-slate-800 italic uppercase tracking-tighter">Your Turn (X)</h2>
+    </div>
+
+    <div class="flex-grow flex items-center justify-center p-6">
+        <div class="grid grid-cols-3 gap-4 w-full max-w-[350px]">
+            <div class="cell" onclick="makeMove(0)" id="c0"></div>
+            <div class="cell" onclick="makeMove(1)" id="c1"></div>
+            <div class="cell" onclick="makeMove(2)" id="c2"></div>
+            <div class="cell" onclick="makeMove(3)" id="c3"></div>
+            <div class="cell" onclick="makeMove(4)" id="c4"></div>
+            <div class="cell" onclick="makeMove(5)" id="c5"></div>
+            <div class="cell" onclick="makeMove(6)" id="c6"></div>
+            <div class="cell" onclick="makeMove(7)" id="c7"></div>
+            <div class="cell" onclick="makeMove(8)" id="c8"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let isGameActive = true;
+        let timeLeft = 30;
+        const statusDisplay = document.getElementById('status');
+
+        // Sync Coins from Database
+        setInterval(() => {
+            const el = document.getElementById('game-coins');
+            if(el && typeof window.coins !== 'undefined') el.innerText = window.coins;
+        }, 1000);
+
+        // Timer for Reward
+        const timerInt = setInterval(() => {
+            if(timeLeft > 0) {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft + "s";
+            } else {
+                clearInterval(timerInt);
+                addReward(10, "Time Reward Collected!");
+            }
+        }, 1000);
+
+        function makeMove(index) {
+            if (board[index] === "" && isGameActive) {
+                board[index] = "X";
+                updateBoard();
+                if (!checkWinner()) {
+                    statusDisplay.innerText = "Bot is thinking...";
+                    setTimeout(botMove, 500);
+                }
+            }
+        }
+
+        function botMove() {
+            if (!isGameActive) return;
+            let emptyCells = board.map((val, idx) => val === "" ? idx : null).filter(val => val !== null);
+            if (emptyCells.length > 0) {
+                let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                board[randomCell] = "O";
+                updateBoard();
+                checkWinner();
+                statusDisplay.innerText = "Your Turn (X)";
+            }
+        }
+
+        function updateBoard() {
+            board.forEach((val, idx) => {
+                const cell = document.getElementById(`c${idx}`);
+                cell.innerText = val;
+                cell.classList.remove('x', 'o');
+                if(val) cell.classList.add(val.toLowerCase());
+            });
+        }
+
+        function checkWinner() {
+            const winConditions = [
+                [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]
+            ];
+            for (let condition of winConditions) {
+                let [a, b, c] = condition;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    isGameActive = false;
+                    statusDisplay.innerText = board[a] === "X" ? "YOU WON!" : "BOT WON!";
+                    if(board[a] === "X") addReward(5, "Victory Bonus!");
+                    return true;
+                }
+            }
+            if (!board.includes("")) {
+                statusDisplay.innerText = "DRAW!";
+                isGameActive = false;
+                return true;
+            }
+            return false;
+        }
+
+        async function addReward(amount, message) {
+            try {
+                const newCoins = window.coins + amount;
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .update({ coins: newCoins })
+                    .eq('id', userId);
+
+                if (error) throw error;
+                window.coins = newCoins;
+                alert(message + " + " + amount + " Coins Added.");
+                window.location.href = 'games.html';
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+  </html>
+  
