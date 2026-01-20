@@ -3,116 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Earn Coins</title>
+    <title>Watch Ads - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .ad-card { transition: all 0.3s ease; }
+        .ad-card:active { transform: scale(0.95); }
+        .timer-active { pointer-events: none; opacity: 0.6; filter: grayscale(1); }
+    </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-6 font-sans">
+<body class="bg-[#f8fafc] font-sans">
 
-    <div class="bg-white w-full max-w-sm rounded-[40px] p-8 text-center shadow-2xl relative">
+    <div class="bg-white p-5 flex justify-between items-center shadow-sm sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <button onclick="window.location.href='home.html'" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-600 border border-slate-100 shadow-sm">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="font-black text-slate-800 italic uppercase tracking-widest text-sm">Watch & Earn</h1>
+        </div>
         
-        <a href="home.html" class="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors">
-            <i class="fas fa-times-circle text-2xl"></i>
-        </a>
-
-        <div class="mb-8">
-            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                <i class="fas fa-coins text-3xl"></i>
-            </div>
-            <h2 class="text-2xl font-black text-gray-800 italic uppercase">Coin Generator</h2>
-            <p class="text-gray-400 text-[10px] mt-1 font-bold tracking-widest uppercase">Database Sync Test</p>
+        <div class="bg-indigo-600 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg shadow-indigo-100">
+            <span class="text-white text-xs font-black italic">🪙 <span id="ad-coins">0</span></span>
         </div>
-
-        <div class="bg-slate-50 rounded-3xl py-6 px-4 mb-8 border-2 border-dashed border-slate-200">
-            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Your Current Balance</p>
-            <h3 class="text-4xl font-black text-blue-600 mt-1">🪙 <span id="test-coins">0</span></h3>
-        </div>
-
-        <button id="test-btn" onclick="testCoinAdd()" class="w-full bg-blue-600 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-blue-100 active:scale-95 transition-all">
-            CLAIM +10 COINS
-        </button>
-
-        <p id="test-status" class="mt-4 text-xs font-bold text-gray-400 italic uppercase tracking-tighter"></p>
     </div>
 
-    <script>
-        // Supabase Configuration
-        const SB_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
-        const SB_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+    <div class="p-6">
+        <div class="bg-indigo-50 p-6 rounded-[35px] border border-indigo-100 mb-8 text-center">
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-indigo-600 mx-auto mb-4 shadow-sm">
+                <i class="fas fa-play text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-black text-slate-800 italic uppercase tracking-tighter">Ready to Earn?</h2>
+            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Watch ads and get 5 coins instantly</p>
+        </div>
 
-        let uid = null;
-        let currentAmt = 0;
-
-        // 1. User ka Data Load Karna (Page khulte hi)
-        async function loadData() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            
-            if (user) {
-                uid = user.id; // Yeh UUID hai (String)
+        <div id="ad-btn-container">
+            <div onclick="handleAdClick()" id="watch-btn" class="ad-card bg-white p-6 rounded-[35px] shadow-xl shadow-slate-100 border border-slate-50 flex flex-col items-center text-center cursor-pointer">
+                <div class="w-20 h-20 bg-pink-100 rounded-[30px] flex items-center justify-center text-pink-500 text-3xl mb-4">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h4 class="font-black text-slate-800 text-lg italic uppercase">Watch Video Ad</h4>
+                <p id="btn-subtext" class="text-[10px] text-pink-500 font-black uppercase tracking-[0.2em] mt-2">Reward: +5 Coins</p>
                 
-                let { data, error } = await supabaseClient
+                <div id="ad-timer-display" class="hidden mt-4">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Next Ad in</p>
+                    <div class="text-3xl font-black text-indigo-600 italic"><span id="countdown">10</span>s</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 space-y-4">
+            <div class="flex items-start gap-4 p-4 bg-white rounded-2xl border border-slate-50">
+                <div class="text-indigo-600 mt-1"><i class="fas fa-check-circle"></i></div>
+                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Click on the button above to load an advertisement.</p>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-white rounded-2xl border border-slate-50">
+                <div class="text-indigo-600 mt-1"><i class="fas fa-check-circle"></i></div>
+                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">After redirecting, wait for the ad to load and then come back.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="ad-script-container" class="hidden">
+        <script src="https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js"></script>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let isAdCooldown = false;
+
+        // Real-time Coin Balance Sync
+        setInterval(() => {
+            const el = document.getElementById('ad-coins');
+            if(el && typeof window.coins !== 'undefined') el.innerText = window.coins;
+        }, 1000);
+
+        async function handleAdClick() {
+            if (isAdCooldown) return;
+
+            // 1. User ko Ad page par redirect karein (Direct link setup)
+            // Note: Ad script automatically handle karti hai but hum manually redirect logic bhi rakhte hain
+            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank');
+
+            // 2. Add Coins (Jab user click karke wapas aayega ya tab background mein process hoga)
+            await addAdReward();
+        }
+
+        async function addAdReward() {
+            try {
+                const reward = 5;
+                const newTotal = window.coins + reward;
+
+                // Supabase Update
+                const { error } = await supabaseClient
                     .from('profiles')
-                    .select('coins')
-                    .eq('id', uid)
-                    .single();
+                    .update({ coins: newTotal })
+                    .eq('id', userId);
 
-                if (data) {
-                    currentAmt = parseInt(data.coins) || 0;
-                    document.getElementById('test-coins').innerText = currentAmt;
-                    document.getElementById('test-status').innerText = "Connected to Database";
-                } else if (error) {
-                    document.getElementById('test-status').innerText = "Profile not found!";
-                    console.error("Error fetching coins:", error.message);
+                if (error) throw error;
+
+                // Local Update
+                window.coins = newTotal;
+                startCooldown();
+                alert("Ad Viewed! 5 Coins added successfully.");
+
+            } catch (err) {
+                console.error("Ad Reward Error:", err.message);
+            }
+        }
+
+        function startCooldown() {
+            isAdCooldown = true;
+            const btn = document.getElementById('watch-btn');
+            const timerDisplay = document.getElementById('ad-timer-display');
+            const subtext = document.getElementById('btn-subtext');
+            const countdownEl = document.getElementById('countdown');
+            
+            btn.classList.add('timer-active');
+            timerDisplay.classList.remove('hidden');
+            subtext.classList.add('hidden');
+
+            let timeLeft = 10;
+            const interval = setInterval(() => {
+                timeLeft--;
+                countdownEl.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    resetButton();
                 }
-            } else {
-                alert("Login Required!");
-                window.location.href = "login.html";
-            }
+            }, 1000);
         }
 
-        // 2. Coin Add Karne ka Function (Fixed Version)
-        async function testCoinAdd() {
-            const btn = document.getElementById('test-btn');
-            const status = document.getElementById('test-status');
-
-            if (!uid) return alert("User not logged in!");
-
-            // Button Disable karein taaki baar-baar click na ho
-            btn.disabled = true;
-            btn.innerText = "UPDATING DB...";
-            status.innerText = "Saving your coins...";
-
-            // Naya total (BigInt/Integer safe math)
-            const newTotal = Number(currentAmt) + 10;
-
-            // Database Update logic
-            // Yahan hum 'coins' (BigInt) ko Number bhej rahe hain
-            // Aur 'id' (UUID) ko String bhej rahe hain
-            const { data, error } = await supabaseClient
-                .from('profiles')
-                .update({ coins: newTotal })
-                .eq('id', uid);
-
-            if (!error) {
-                currentAmt = newTotal; // Local ginti update karein
-                document.getElementById('test-coins').innerText = currentAmt;
-                status.innerText = "SUCCESS! COINS ADDED.";
-                status.style.color = "#22c55e"; // Green color
-            } else {
-                status.innerText = "ERROR: " + error.message;
-                status.style.color = "#ef4444"; // Red color
-                console.error("Supabase Error:", error.message);
-                alert("Update failed: " + error.message);
-            }
-
-            btn.disabled = false;
-            btn.innerText = "CLAIM +10 COINS";
+        function resetButton() {
+            isAdCooldown = false;
+            const btn = document.getElementById('watch-btn');
+            const timerDisplay = document.getElementById('ad-timer-display');
+            const subtext = document.getElementById('btn-subtext');
+            
+            btn.classList.remove('timer-active');
+            timerDisplay.classList.add('hidden');
+            subtext.classList.remove('hidden');
         }
-
-        // Execute load function on startup
-        window.onload = loadData;
     </script>
-</body>
+</body> 
+    <script src="https://pl28524045.effectivegatecpm.com/76/8f/f0/768ff0a5001c889e2ce08ad194f4d57b.js"></script>
 </html>
