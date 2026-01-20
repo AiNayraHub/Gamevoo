@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knife Hit - Gamevoo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; overflow: hidden; touch-action: manipulation; }
+        #game-canvas { width: 100%; height: 100%; }
+        .target { transition: transform 0.1s linear; }
+        .knife { position: absolute; transition: bottom 0.2s ease-in; }
+        .timer-glow { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col text-white">
+
+    <div class="p-4 flex justify-between items-center bg-slate-900/50 backdrop-blur-md border-b border-white/10 z-50">
+        <button onclick="window.location.href='games.html'" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex flex-col items-center">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Survive & Earn</span>
+            <div id="game-timer" class="text-2xl font-black italic text-yellow-400 timer-glow">30s</div>
+        </div>
+        <div class="bg-indigo-600 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+            <span class="text-xs font-black italic text-white">🪙 <span id="realtime-coins">0</span></span>
+        </div>
+    </div>
+
+    <div id="start-screen" class="fixed inset-0 bg-slate-900/90 z-40 flex flex-col items-center justify-center p-10 text-center">
+        <div class="w-24 h-24 bg-rose-500 rounded-[35px] flex items-center justify-center text-4xl mb-6 shadow-2xl shadow-rose-500/20 rotate-45">
+            <i class="fas fa-utensils -rotate-45"></i>
+        </div>
+        <h1 class="text-4xl font-black italic tracking-tighter mb-2 uppercase">Knife Hit</h1>
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-8 leading-relaxed">
+            Throw knives, hit target. <br> Survive 30s to earn 10 Coins!
+        </p>
+        <button onclick="startGame()" class="bg-rose-500 hover:bg-rose-600 text-white px-12 py-5 rounded-3xl font-black italic tracking-widest text-lg shadow-xl shadow-rose-500/30 active:scale-95 transition-all">
+            PLAY GAME
+        </button>
+    </div>
+
+    <div id="game-container" class="relative flex-grow flex items-center justify-center overflow-hidden pointer-events-none opacity-20">
+        <div id="target-log" class="w-48 h-48 bg-amber-900 rounded-full border-8 border-amber-800 flex items-center justify-center relative shadow-2xl">
+            <div class="w-full h-1 bg-amber-800 rotate-45"></div>
+            <div class="w-full h-1 bg-amber-800 -rotate-45"></div>
+            </div>
+
+        <div id="active-knife" class="absolute bottom-20 w-2 h-20 bg-slate-300 rounded-b-full border-x-4 border-slate-400">
+            <div class="absolute top-0 w-full h-6 bg-rose-600 rounded-t-lg"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let timeLeft = 30;
+        let timerInterval;
+        let rotation = 0;
+        let isGameRunning = false;
+        let rotationSpeed = 3;
+
+        // UI Coin Sync
+        setInterval(() => {
+            const el = document.getElementById('realtime-coins');
+            if(el && typeof window.coins !== 'undefined') el.innerText = window.coins;
+        }, 500);
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-container').classList.remove('opacity-20');
+            document.getElementById('game-container').classList.add('pointer-events-auto');
+            isGameRunning = true;
+            startTimer();
+            animateTarget();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if(timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById('game-timer').innerText = timeLeft + "s";
+                } else {
+                    completeGame();
+                }
+            }, 1000);
+        }
+
+        function animateTarget() {
+            if(!isGameRunning) return;
+            rotation += rotationSpeed;
+            document.getElementById('target-log').style.transform = `rotate(${rotation}deg)`;
+            
+            // Randomly change speed to make it harder
+            if(Math.random() < 0.01) rotationSpeed = (Math.random() * 5) + 2;
+            
+            requestAnimationFrame(animateTarget);
+        }
+
+        // Real-time Coin Addition after 30 seconds
+        async function completeGame() {
+            clearInterval(timerInterval);
+            isGameRunning = false;
+            
+            const bonus = 10;
+            alert("TIME UP! You survived 30 seconds. Adding 10 Coins to your account...");
+            
+            try {
+                // 1. Database sync
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .update({ coins: window.coins + bonus })
+                    .eq('id', userId);
+
+                if (error) throw error;
+
+                // 2. Local Update
+                window.coins += bonus;
+                alert("CONGRATULATIONS! 10 Coins Added Successfully.");
+                window.location.href = 'games.html';
+                
+            } catch (err) {
+                alert("Error saving coins: " + err.message);
+                window.location.href = 'games.html';
+            }
+        }
+
+        // Knife Throwing Visual (Basic)
+        window.addEventListener('mousedown', () => {
+            if(!isGameRunning) return;
+            // Add throwing logic/animations here if needed
+        });
+    </script>
+</body>
+  </html>
+  
