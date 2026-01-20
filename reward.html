@@ -3,145 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Reward - Gamevoo</title>
+    <title>Redeem Rewards - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8fafc; }
-        .reward-header { background: linear-gradient(135deg, #4f46e5, #9333ea); }
-        .premium-shadow { box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.1); }
+        body { background: #0f172a; color: white; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gold-gradient { background: linear-gradient(135deg, #fbbf24, #d97706); }
     </style>
 </head>
-<body class="font-sans text-slate-900 pb-28">
+<body class="pb-10">
 
-    <div class="reward-header pb-28 pt-10 px-6 rounded-b-[50px] text-white text-center relative overflow-hidden">
-        <div class="flex items-center justify-between mb-6 relative z-10">
-            <button onclick="location.href='home.html'" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
-                <i class="fas fa-chevron-left text-sm"></i>
-            </button>
-            <h1 class="font-black uppercase tracking-widest text-sm">Gift Rewards</h1>
-            <div class="w-10"></div>
-        </div>
-        <h2 class="text-3xl font-black italic mb-2 relative z-10">Redeem Code</h2>
-        <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">Enter code to get instant coins</p>
+    <div class="p-6 flex items-center justify-between">
+        <a href="home.html" class="w-12 h-12 glass-card rounded-2xl flex items-center justify-center text-white text-xl">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="text-sm font-black uppercase tracking-[0.3em] italic">Redeem Center</h1>
+        <div class="w-12"></div>
     </div>
 
-    <div class="px-6 -mt-16 relative z-20">
-        <div class="bg-white rounded-[35px] p-8 premium-shadow border border-indigo-50">
-            <div class="space-y-5">
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400">
-                        <i class="fas fa-ticket-alt"></i>
-                    </span>
-                    <input id="gift-input" type="text" placeholder="ENTER GIFT CODE" 
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-5 pl-12 pr-4 text-center font-black text-indigo-600 focus:border-indigo-500 outline-none transition-all uppercase">
+    <div class="px-6 mb-10">
+        <div class="glass-card p-6 rounded-[35px] text-center relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 blur-3xl rounded-full"></div>
+            <p class="text-[10px] font-bold uppercase tracking-widest opacity-50">Current Balance</p>
+            <h2 class="text-5xl font-black mt-2 italic">🪙 <span id="gift-coins">0</span></h2>
+        </div>
+    </div>
+
+    <div class="px-6">
+        <div class="glass-card p-8 rounded-[40px]">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 gold-gradient rounded-3xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-amber-500/20">
+                    <i class="fas fa-gift"></i>
                 </div>
+                <h3 class="text-xl font-bold italic">Have a Gift Code?</h3>
+                <p class="text-xs text-slate-400 mt-2">Enter your secret code below to claim instant coins.</p>
+            </div>
+
+            <div class="space-y-4">
+                <input type="text" id="gift-code-input" placeholder="ENTER CODE HERE" 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 font-black tracking-widest text-center text-amber-400 outline-none focus:border-amber-500 transition-all">
                 
-                <button onclick="redeemGift()" id="redeem-btn" 
-                    class="w-full bg-indigo-600 text-white py-5 rounded-[25px] font-black text-sm tracking-widest shadow-lg active:scale-95 transition-all">
-                    CLAIM REWARD
+                <button onclick="handleRedeem()" id="redeem-btn" 
+                    class="w-full gold-gradient text-white py-5 rounded-2xl font-black text-sm tracking-[0.2em] shadow-xl active:scale-95 transition-all">
+                    CLAIM NOW
                 </button>
             </div>
         </div>
-
-        <div class="mt-8 space-y-4">
-            <div class="bg-indigo-50 rounded-2xl p-4 flex items-center gap-4">
-                <i class="fas fa-info-circle text-indigo-600"></i>
-                <p class="text-[10px] font-bold text-indigo-700 uppercase">Limit: Ek code ek hi bar use hoga.</p>
-            </div>
-            <a href="https://t.me/+919559123316" target="_blank" class="block bg-white rounded-2xl p-4 text-center border border-slate-100">
-                <p class="text-xs font-bold text-blue-600">Get New Codes on Telegram</p>
-            </a>
-        </div>
-    </div>
-
-    <div class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 p-5 flex justify-around items-center z-50 rounded-t-[30px]">
-        <button onclick="location.href='home.html'" class="text-slate-300"><i class="fas fa-home text-xl"></i></button>
-        <button onclick="location.href='wallet.html'" class="text-slate-300"><i class="fas fa-wallet text-xl"></i></button>
-        <button onclick="location.href='reward.html'" class="text-indigo-600"><i class="fas fa-ticket-alt text-xl"></i></button>
-        <button onclick="location.href='profile.html'" class="text-slate-300"><i class="fas fa-user text-xl"></i></button>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // CORE LOGIC - FIXED
-        async function redeemGift() {
-            const codeInput = document.getElementById('gift-input').value.trim().toUpperCase();
+        async function handleRedeem() {
+            const codeInput = document.getElementById('gift-code-input');
             const btn = document.getElementById('redeem-btn');
+            const code = codeInput.value.trim().toUpperCase();
 
-            if (!codeInput) return alert("Bhai, code toh dalo!");
-            
-            // Database Connection Check
-            if (typeof userId === 'undefined' || !userId) {
-                return alert("System connect ho raha hai, 2 second ruko.");
-            }
+            if (!code) return alert("Please enter a valid gift code!");
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> Checking...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING...';
 
-            try {
-                // 1. Check if user already used THIS specific code
-                const { data: usedData, error: usedError } = await supabaseClient
-                    .from('redeemed_codes')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .eq('code_text', codeInput);
-
-                if (usedData && usedData.length > 0) {
-                    alert("Aapne ye code pehle hi use kar liya hai!");
-                    resetBtn();
-                    return;
-                }
-
-                // 2. Check if code is valid in 'gift_codes' table
-                const { data: codeData, error: codeError } = await supabaseClient
-                    .from('gift_codes')
-                    .select('*')
-                    .eq('code', codeInput)
-                    .single();
-
-                if (codeError || !codeData) {
-                    alert("Galti! Ye code valid nahi hai.");
-                    resetBtn();
-                    return;
-                }
-
-                // 3. Update Coins in Database (using your addCoins function from app.js)
-                const amountToAdd = codeData.amount;
-                const newTotal = coins + amountToAdd;
-
-                const { error: updateError } = await supabaseClient
-                    .from('users_data')
-                    .update({ coins: newTotal })
-                    .eq('id', userId);
-
-                if (updateError) throw updateError;
-
-                // 4. Record that this user used this code
-                await supabaseClient
-                    .from('redeemed_codes')
-                    .insert([{ user_id: userId, code_text: codeInput }]);
-
-                // Success
-                alert(`Mubarak ho! ${amountToAdd} Coins aapke account mein add ho gaye.`);
-                document.getElementById('gift-input').value = "";
-                
-                // Refresh local coins
-                if(typeof coins !== 'undefined') coins = newTotal;
-
-            } catch (err) {
-                console.error(err);
-                alert("Database Error: " + err.message);
+            // processGiftRedeem function (App.js) ko call karenge
+            const result = await processGiftRedeem(code);
+            
+            if (result.success) {
+                // Success message in English as requested
+                alert(`CONGRATULATIONS!\n\n${result.amount} Coins have been successfully added to your account.`);
+                codeInput.value = "";
+            } else {
+                alert("ERROR: " + result.message);
             }
 
-            resetBtn();
-        }
-
-        function resetBtn() {
-            const btn = document.getElementById('redeem-btn');
             btn.disabled = false;
-            btn.innerHTML = 'CLAIM REWARD';
+            btn.innerText = "CLAIM NOW";
         }
     </script>
 </body>
