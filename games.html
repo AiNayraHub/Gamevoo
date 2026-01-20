@@ -3,43 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play Games</title>
+    <title>Gamevoo - Games</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .game-card { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); }
+        .game-card:active { transform: scale(0.95); }
+        .coin-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+    </style>
 </head>
-<body class="bg-gray-900 text-white p-6">
-    <div class="text-center mt-10">
-        <div class="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-            <i class="fas fa-gamepad text-4xl text-white"></i>
-        </div>
-        <h2 class="text-2xl font-bold">Game Zone</h2>
-        <p class="text-gray-400 mt-2">Play for 1 minute to earn 20 coins</p>
-        
-        <div class="mt-10 bg-gray-800 p-10 rounded-[40px] border border-gray-700">
-            <h3 id="timer" class="text-5xl font-black text-orange-500">60</h3>
-            <p class="text-xs mt-2 uppercase tracking-widest">Seconds Left</p>
+<body class="bg-[#f8fafc] font-sans">
+
+    <div class="bg-white p-4 flex justify-between items-center shadow-sm sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <button onclick="window.location.href='home.html'" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-600 border border-slate-100 shadow-sm">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1 class="font-black text-slate-800 italic uppercase tracking-widest text-sm">Play & Earn</h1>
         </div>
         
-        <button id="start-btn" onclick="startGame()" class="mt-10 w-full bg-orange-500 py-4 rounded-2xl font-bold shadow-lg">START PLAYING</button>
+        <div class="coin-badge px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg shadow-orange-100">
+            <span class="text-white text-xs font-black italic">🪙 <span id="game-coins">0</span></span>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <div class="mb-8">
+            <h2 class="text-2xl font-black text-slate-800 italic uppercase tracking-tighter">Choose Game</h2>
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Play for 2 mins to earn +20 Coins</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6">
+            
+            <div onclick="window.location.href='tictactoe.html'" class="game-card bg-white p-5 rounded-[35px] shadow-xl shadow-slate-100 flex items-center justify-between cursor-pointer border border-indigo-50">
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-[22px] flex items-center justify-center text-indigo-600 text-3xl shadow-inner">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-800 text-lg italic uppercase">Tic Tac Toe</h4>
+                        <p class="text-[9px] text-indigo-500 font-black uppercase tracking-widest">Challenge Bot</p>
+                    </div>
+                </div>
+                <div class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg shadow-indigo-100">
+                    <i class="fas fa-play text-xs"></i>
+                </div>
+            </div>
+
+            <div onclick="window.location.href='knifehit.html'" class="game-card bg-white p-5 rounded-[35px] shadow-xl shadow-slate-100 flex items-center justify-between cursor-pointer border border-rose-50">
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 bg-rose-100 rounded-[22px] flex items-center justify-center text-rose-600 text-3xl shadow-inner">
+                        <i class="fas fa-hand-pointer rotate-45"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-800 text-lg italic uppercase">Knife Hit</h4>
+                        <p class="text-[9px] text-rose-500 font-black uppercase tracking-widest">Master Accuracy</p>
+                    </div>
+                </div>
+                <div class="bg-rose-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg shadow-rose-100">
+                    <i class="fas fa-play text-xs"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-10 p-6 bg-slate-100 rounded-[30px] border border-dashed border-slate-200 text-center">
+            <i class="fas fa-info-circle text-slate-400 mb-2"></i>
+            <p class="text-[10px] text-slate-500 font-bold uppercase leading-relaxed">More games are coming soon! Keep checking every day.</p>
+        </div>
     </div>
 
     <script src="app.js"></script>
     <script>
-        function startGame() {
-            let sec = 60;
-            const btn = document.getElementById('start-btn');
-            btn.disabled = true;
-            const timer = setInterval(async () => {
-                sec--;
-                document.getElementById('timer').innerText = sec;
-                if (sec <= 0) {
-                    clearInterval(timer);
-                    await addCoins(20);
-                    alert("Time Up! 20 Coins Added.");
-                    window.location.href = 'home.html';
-                }
-            }, 1000);
-        }
+        // Coin Sync
+        setInterval(() => {
+            const el = document.getElementById('game-coins');
+            if(el && typeof coins !== 'undefined') el.innerText = coins;
+        }, 1000);
     </script>
 </body>
 </html>
