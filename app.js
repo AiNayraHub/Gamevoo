@@ -1,13 +1,13 @@
-// 1. SUPABASE CONNECTION
+// 1. SUPABASE CONNECTION CONFIG
 const SUPABASE_URL = 'https://kozmxgymkitcbevtufgz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sMp15iZ3aHBEz44x6YzISA_3fihZSgX';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-window.coins = 0; // Global balance access
+window.coins = 0; // Global balance variable
 let userId = null;
 let userEmail = "";
 
-// 2. APP INITIALIZATION
+// 2. APP INITIALIZATION (Sabse pehle ye chalega)
 async function initApp() {
     const { data: { user } } = await supabaseClient.auth.getUser();
 
@@ -16,20 +16,20 @@ async function initApp() {
         userEmail = user.email;
         console.log("Logged in as:", userEmail);
         
-        // Database se profiles table ka data load karein
+        // Profiles table se coins aur data fetch karein
         await syncUserData();
         
-        // Force Visibility: Har 1.5 second mein check karo ki balance dikh raha hai ya nahi
+        // Loop: Har 1.5 second mein UI refresh karein taaki balance hide na ho
         setInterval(refreshGlobalUI, 1500); 
     } else {
-        // Agar user login nahi hai aur kisi aur page par hai, toh login par bhejo
+        // Agar user login nahi hai aur kisi security wale page par hai
         if (!window.location.pathname.includes('login.html')) {
             window.location.replace('login.html');
         }
     }
 }
 
-// 3. SYNC DATA (Profiles Table)
+// 3. DATA SYNC (Profiles Table se coins uthana)
 async function syncUserData() {
     try {
         let { data: profile, error } = await supabaseClient
@@ -39,7 +39,7 @@ async function syncUserData() {
             .maybeSingle();
 
         if (!profile) {
-            // Agar profile nahi hai (Naya User), toh create karein
+            // Naya user hai toh profile banayein
             const { data: newP } = await supabaseClient
                 .from('profiles')
                 .insert([{ id: userId, email: userEmail, coins: 0 }])
@@ -47,10 +47,10 @@ async function syncUserData() {
             profile = newP;
         }
 
-        window.coins = profile.coins || 0;
+        window.coins = Number(profile.coins || 0);
         refreshGlobalUI();
 
-        // Agar Wallet page par hain toh history load karein
+        // Wallet page history load karein
         if (document.getElementById('history-container')) {
             loadWithdrawHistory();
         }
@@ -59,21 +59,20 @@ async function syncUserData() {
     }
 }
 
-// 4. REFRESH GLOBAL UI (Sabhi pages ke liye)
+// 4. GLOBAL UI REFRESH (Har page ka balance update)
 function refreshGlobalUI() {
-    // Balance update karne wali IDs
     const coinIDs = ['p-coins', 'wallet-coins', 'home-coins', 'gift-coins', 'wallet-coins-display'];
     
     coinIDs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             el.innerText = window.coins;
-            el.classList.remove('hidden'); // Tailwind hidden fix
+            el.classList.remove('hidden'); 
             el.style.setProperty('display', 'inline-block', 'important');
         }
     });
 
-    // ₹ Value (100 coins = ₹1)
+    // Money Value in ₹ (100 coins = ₹1)
     const moneyVal = document.getElementById('money-val');
     if (moneyVal) {
         moneyVal.innerText = (window.coins / 100).toFixed(2);
@@ -87,7 +86,7 @@ function refreshGlobalUI() {
     });
 }
 
-// 5. WITHDRAWAL FUNCTION (UPI & Admin Panel Fix)
+// 5. WITHDRAWAL LOGIC (UPI & Admin Panel Fix)
 async function processWithdrawRequest(coinAmt, upi) {
     try {
         if (window.coins < coinAmt) {
@@ -95,7 +94,7 @@ async function processWithdrawRequest(coinAmt, upi) {
             return false;
         }
 
-        // A. Profile se coins minus karein
+        // A. Minus coins from profiles
         const { error: updErr } = await supabaseClient
             .from('profiles')
             .update({ coins: window.coins - coinAmt })
@@ -103,7 +102,7 @@ async function processWithdrawRequest(coinAmt, upi) {
 
         if (updErr) throw updErr;
 
-        // B. Withdrawal record create karein (upi_id column fix)
+        // B. Add to withdrawals table (upi_id column)
         const { error: withdrawError } = await supabaseClient
             .from('withdrawals')
             .insert([{ 
@@ -127,56 +126,64 @@ async function processWithdrawRequest(coinAmt, upi) {
     }
 }
 
-// 6. GIFT CODE REDEEM (Undefined Fix & English Dialogue)
+// 6. GIFT CODE REDEEM (Undefined Fix - uses 'reward' column)
 async function processGiftRedeem(code) {
     try {
-        // A. Code validity check karein
-        const { data: gift, error } = await supabaseClient
+        // A. Fetch from gift_codes
+        const { data: gift, error: giftErr } = await supabaseClient
             .from('gift_codes')
             .select('*')
             .eq('code', code)
             .maybeSingle();
 
-        if (error || !gift) {
-            return { success: false, message: "This code is invalid or does not exist." };
+        if (giftErr || !gift) {
+            return { success: false, message: "Invalid Gift Code!" };
         }
 
-        // B. Check karein user ne pehle toh use nahi kiya
-        const { data: alreadyRedeemed } = await supabaseClient
+        // Check if data has reward
+        const bonusAmount = Number(gift.reward); // FIXED: Matching your SQL column 'reward'
+        
+        if (isNaN(bonusAmount)) {
+            return { success: false, message: "Invalid reward amount in database." };
+        }
+
+        // B. Check if already used by this user
+        const { data: used } = await supabaseClient
             .from('redeemed_codes')
             .select('*')
             .eq('user_id', userId)
             .eq('code_text', code)
             .maybeSingle();
 
-        if (alreadyRedeemed) {
-            return { success: false, message: "You have already claimed this gift code!" };
+        if (used) {
+            return { success: false, message: "You have already used this code!" };
         }
 
-        // C. Coins add karein
+        // C. Update Coins
         const { error: updErr } = await supabaseClient
             .from('profiles')
-            .update({ coins: window.coins + gift.amount })
+            .update({ coins: window.coins + bonusAmount })
             .eq('id', userId);
 
         if (updErr) throw updErr;
 
-        // D. Redemption record karein
+        // D. Mark as Redeemed
         await supabaseClient.from('redeemed_codes').insert([
             { user_id: userId, code_text: code }
         ]);
 
-        window.coins += gift.amount;
+        window.coins += bonusAmount;
         refreshGlobalUI();
 
-        return { success: true, amount: gift.amount };
+        return { success: true, amount: bonusAmount };
 
     } catch (err) {
-        return { success: false, message: err.message };
+        console.error(err);
+        return { success: false, message: "Server Error!" };
     }
 }
 
-// 7. WITHDRAWAL HISTORY
+// 7. LOAD WITHDRAWAL HISTORY
 async function loadWithdrawHistory() {
     const container = document.getElementById('history-container');
     if (!container) return;
@@ -189,10 +196,10 @@ async function loadWithdrawHistory() {
 
     if (data && data.length > 0) {
         container.innerHTML = data.map(item => `
-            <div class="bg-white p-4 rounded-2xl flex justify-between items-center mb-3 shadow-sm border border-gray-50">
+            <div class="bg-white p-4 rounded-2xl flex justify-between items-center mb-3 shadow-sm border border-slate-100">
                 <div class="text-left">
                     <p class="text-[11px] font-black italic text-slate-700">₹${item.amount / 100} PAYOUT</p>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase">${new Date(item.created_at).toLocaleDateString()}</p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">${new Date(item.created_at).toLocaleDateString()}</p>
                 </div>
                 <span class="text-[9px] font-black uppercase px-3 py-1 rounded-full ${item.status === 'success' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">
                     ${item.status}
@@ -210,6 +217,6 @@ async function handleLogout() {
     }
 }
 
-// INITIALIZE APP
+// BOOTSTRAP APP
 initApp();
-                    
+                
