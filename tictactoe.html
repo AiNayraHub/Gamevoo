@@ -25,8 +25,6 @@
         .cell:active { transform: scale(0.9); }
         .cell.x { color: #4f46e5; }
         .cell.o { color: #ef4444; }
-        .win-line { animation: winPulse 0.5s infinite alternate; }
-        @keyframes winPulse { from { opacity: 1; } to { opacity: 0.5; } }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
@@ -36,8 +34,7 @@
             <i class="fas fa-times"></i>
         </button>
         <div class="text-center">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Time Reward</p>
-            <p id="timer" class="text-indigo-600 font-black italic">30s</p>
+            <h1 class="font-black text-slate-800 italic uppercase tracking-widest text-sm">Tic Tac Toe</h1>
         </div>
         <div class="bg-amber-100 px-4 py-2 rounded-2xl border border-amber-200">
             <span class="text-amber-700 text-xs font-black italic">🪙 <span id="game-coins">0</span></span>
@@ -66,24 +63,11 @@
     <script>
         let board = ["", "", "", "", "", "", "", "", ""];
         let isGameActive = true;
-        let timeLeft = 30;
-        const statusDisplay = document.getElementById('status');
 
-        // Sync Coins from Database
+        // Real-time Coin Sync
         setInterval(() => {
             const el = document.getElementById('game-coins');
             if(el && typeof window.coins !== 'undefined') el.innerText = window.coins;
-        }, 1000);
-
-        // Timer for Reward
-        const timerInt = setInterval(() => {
-            if(timeLeft > 0) {
-                timeLeft--;
-                document.getElementById('timer').innerText = timeLeft + "s";
-            } else {
-                clearInterval(timerInt);
-                addReward(10, "Time Reward Collected!");
-            }
         }, 1000);
 
         function makeMove(index) {
@@ -91,7 +75,7 @@
                 board[index] = "X";
                 updateBoard();
                 if (!checkWinner()) {
-                    statusDisplay.innerText = "Bot is thinking...";
+                    document.getElementById('status').innerText = "Bot is thinking...";
                     setTimeout(botMove, 500);
                 }
             }
@@ -104,8 +88,9 @@
                 let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
                 board[randomCell] = "O";
                 updateBoard();
-                checkWinner();
-                statusDisplay.innerText = "Your Turn (X)";
+                if (!checkWinner()) {
+                    document.getElementById('status').innerText = "Your Turn (X)";
+                }
             }
         }
 
@@ -122,18 +107,26 @@
             const winConditions = [
                 [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]
             ];
+            
             for (let condition of winConditions) {
                 let [a, b, c] = condition;
                 if (board[a] && board[a] === board[b] && board[a] === board[c]) {
                     isGameActive = false;
-                    statusDisplay.innerText = board[a] === "X" ? "YOU WON!" : "BOT WON!";
-                    if(board[a] === "X") addReward(5, "Victory Bonus!");
+                    if (board[a] === "X") {
+                        document.getElementById('status').innerText = "YOU WON!";
+                        addReward(10, "Winning Bonus!");
+                    } else {
+                        document.getElementById('status').innerText = "BOT WON!";
+                        addReward(5, "Better Luck Next Time!");
+                    }
                     return true;
                 }
             }
+
             if (!board.includes("")) {
-                statusDisplay.innerText = "DRAW!";
                 isGameActive = false;
+                document.getElementById('status').innerText = "IT'S A DRAW!";
+                addReward(5, "Draw Bonus!");
                 return true;
             }
             return false;
@@ -141,21 +134,24 @@
 
         async function addReward(amount, message) {
             try {
-                const newCoins = window.coins + amount;
+                const newTotal = window.coins + amount;
+                
+                // Update Supabase
                 const { error } = await supabaseClient
                     .from('profiles')
-                    .update({ coins: newCoins })
+                    .update({ coins: newTotal })
                     .eq('id', userId);
 
                 if (error) throw error;
-                window.coins = newCoins;
-                alert(message + " + " + amount + " Coins Added.");
+
+                window.coins = newTotal;
+                alert(`${message} \n +${amount} Coins added to your account!`);
                 window.location.href = 'games.html';
             } catch (err) {
-                console.error(err);
+                console.error("Reward Error:", err.message);
+                window.location.href = 'games.html';
             }
         }
     </script>
 </body>
-  </html>
-  
+</html>
