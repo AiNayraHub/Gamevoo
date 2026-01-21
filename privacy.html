@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,35 +7,54 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-50 text-slate-700 font-sans">
+<body class="bg-[#f8fafc] text-slate-700 font-sans">
 
-    <div class="bg-white border-b border-slate-200 p-6 text-center shadow-sm">
-        <h1 class="text-3xl font-black text-indigo-600 uppercase italic italic tracking-tighter">Gamevoo</h1>
-        <p class="text-xs text-slate-400 font-bold uppercase mt-1">Privacy Policy</p>
+    <div class="bg-white border-b border-slate-200 p-8 text-center shadow-sm">
+        <h1 class="text-4xl font-black text-blue-600 uppercase italic tracking-tighter">Gamevoo</h1>
+        <p class="text-[10px] text-slate-400 font-black uppercase mt-2 tracking-[0.3em]">Privacy Policy & Data Protection</p>
     </div>
 
-    <div class="max-w-3xl mx-auto p-6 leading-relaxed">
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+    <div class="max-w-3xl mx-auto p-6">
+        <div class="bg-white p-8 md:p-12 rounded-[40px] shadow-sm border border-slate-100">
             
-            <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">1. Information We Collect</h2>
-            <p class="mb-6">Hum aapka basic data collect karte hain jaise Email, Username aur Device ID taaki hum aapke rewards aur coins ko safe rakh sakein. Hum aapka koi bhi personal password ya sensitive data save nahi karte.</p>
+            <section class="mb-10">
+                <h2 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">01</span>
+                    Information Collection
+                </h2>
+                <p class="text-sm leading-relaxed text-slate-500 font-medium">We collect limited personal information such as your Email Address, Username, and unique Device ID. This data is essential for maintaining your account security and synchronizing your earned rewards across sessions.</p>
+            </section>
 
-            <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">2. How We Use Data</h2>
-            <p class="mb-6">Aapka data sirf account management, withdrawal processing aur personalized offers (Offerwalls) dikhane ke liye use kiya jata hai.</p>
+            <section class="mb-10">
+                <h2 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">02</span>
+                    Data Usage
+                </h2>
+                <p class="text-sm leading-relaxed text-slate-500 font-medium">Your data is strictly used to process withdrawals, prevent fraudulent activities, and provide personalized offers via our integrated offerwall partners. We do not sell your personal data to third-party marketers.</p>
+            </section>
 
-            <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">3. Third-Party Services</h2>
-            <p class="mb-6">Hum third-party networks (CPAGrip, Monlix, etc.) ke saath kaam karte hain. In networks ki apni alag privacy policies ho sakti hain jab aap unke offers complete karte hain.</p>
+            <section class="mb-10">
+                <h2 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">03</span>
+                    Third-Party Partners
+                </h2>
+                <p class="text-sm leading-relaxed text-slate-500 font-medium">Gamevoo integrates with third-party advertising and offerwall networks (e.g., CPAGrip, Monlix). These partners may collect device-specific information when you interact with their tasks to verify completion and issue rewards.</p>
+            </section>
 
-            <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">4. Data Security</h2>
-            <p class="mb-6">Hum Supabase encryption ka use karte hain taaki aapka balance aur profile details hackers se safe rahein.</p>
+            <section class="mb-10">
+                <h2 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-3">
+                    <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">04</span>
+                    Security Standards
+                </h2>
+                <p class="text-sm leading-relaxed text-slate-500 font-medium">We utilize high-level encryption and secure database management through Supabase to ensure that your coin balance and profile information remain protected from unauthorized access.</p>
+            </section>
 
-            <div class="mt-10 text-center">
-                <button onclick="window.history.back()" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-200 active:scale-95 transition-all">
-                    I Understand
+            <div class="mt-12 text-center">
+                <button onclick="window.history.back()" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all uppercase italic text-sm">
+                    Accept & Return
                 </button>
             </div>
         </div>
     </div>
 </body>
 </html>
-
