@@ -114,10 +114,10 @@
                     isGameActive = false;
                     if (board[a] === "X") {
                         document.getElementById('status').innerText = "YOU WON!";
-                        addReward(10, "Winning Bonus!");
+                        addReward(1, "Winning Bonus!");
                     } else {
                         document.getElementById('status').innerText = "BOT WON!";
-                        addReward(5, "Better Luck Next Time!");
+                        addReward(2, "Better Luck Next Time!");
                     }
                     return true;
                 }
@@ -126,7 +126,7 @@
             if (!board.includes("")) {
                 isGameActive = false;
                 document.getElementById('status').innerText = "IT'S A DRAW!";
-                addReward(5, "Draw Bonus!");
+                addReward(2, "Draw Bonus!");
                 return true;
             }
             return false;
