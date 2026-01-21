@@ -3,21 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamevoo - Login</title>
+    <title>Gamevoo - Premium Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #eff6ff, #ffffff);
+        }
+        .login-card {
+            box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.15);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-sm rounded-[40px] p-10 shadow-2xl text-center">
-        <h2 class="text-3xl font-black text-blue-600 mb-2 italic">GAMEVOO</h2>
-        <p class="text-gray-400 text-xs font-bold mb-8 uppercase tracking-widest">Login to your account</p>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-md rounded-[45px] p-8 md:p-12 login-card border border-slate-100 text-center relative overflow-hidden">
+        
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full blur-3xl"></div>
+        
+        <div class="relative">
+            <h2 class="text-4xl font-black text-blue-600 mb-2 italic tracking-tighter">GAMEVOO</h2>
+            <p class="text-slate-400 text-[10px] font-black mb-10 uppercase tracking-[0.3em]">Premium Rewards Platform</p>
 
-        <div class="space-y-4">
-            <input id="email" type="email" placeholder="Email Address" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:ring-2 focus:ring-blue-500">
-            <input id="password" type="password" placeholder="Password" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="handleLogin()" id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-100">LOGIN / SIGNUP</button>
+            <div class="space-y-4">
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-5 top-5 text-slate-300"></i>
+                    <input id="email" type="email" placeholder="Email Address" 
+                        class="w-full p-4 pl-12 bg-slate-50 rounded-2xl border border-transparent outline-none focus:border-blue-500 focus:bg-white transition-all text-sm font-medium">
+                </div>
+
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-5 top-5 text-slate-300"></i>
+                    <input id="password" type="password" placeholder="Password" 
+                        class="w-full p-4 pl-12 bg-slate-50 rounded-2xl border border-transparent outline-none focus:border-blue-500 focus:bg-white transition-all text-sm font-medium">
+                </div>
+
+                <div class="flex justify-end px-2">
+                    <button onclick="handleForgotPassword()" class="text-xs font-bold text-blue-500 hover:text-blue-700 transition-colors uppercase italic">
+                        Forgot Password?
+                    </button>
+                </div>
+
+                <button onclick="handleLogin()" id="login-btn" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-2xl font-black shadow-xl shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-3">
+                    <span>GET STARTED</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+
+            <p id="msg" class="mt-6 text-xs font-bold transition-all"></p>
+
+            <div class="mt-10 pt-6 border-t border-slate-50">
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                    By joining, you agree to our <br>
+                    <a href="terms.html" class="text-slate-800 underline decoration-blue-500 underline-offset-4">Terms of Service</a> 
+                    & 
+                    <a href="privacy.html" class="text-slate-800 underline decoration-blue-500 underline-offset-4">Privacy Policy</a>
+                </p>
+            </div>
         </div>
-        <p id="msg" class="mt-4 text-xs font-bold"></p>
     </div>
 
     <script src="app.js"></script>
@@ -28,22 +72,44 @@
             const msg = document.getElementById('msg');
             const btn = document.getElementById('login-btn');
 
-            if(!email || !password) return alert("Pehle details bharo!");
+            if(!email || !password) {
+                msg.style.color = "red";
+                msg.innerText = "Error: Please fill all fields!";
+                return;
+            }
 
-            btn.innerText = "Connecting...";
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Processing...';
             
             // Login attempt
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
-                // Agar user nahi hai toh Sign Up kardo (Auto-Register)
+                // Auto-Signup if user not found
                 const { error: signUpError } = await supabaseClient.auth.signUp({ email, password });
-                if(signUpError) msg.innerText = signUpError.message;
-                else msg.innerText = "Account Created! Verify email or Login.";
+                if(signUpError) {
+                    msg.style.color = "red";
+                    msg.innerText = signUpError.message;
+                } else {
+                    msg.style.color = "green";
+                    msg.innerText = "Account Created! Verification email sent (if enabled).";
+                }
             } else {
                 window.location.href = "home.html";
             }
-            btn.innerText = "LOGIN / SIGNUP";
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>GET STARTED</span> <i class="fas fa-arrow-right text-xs"></i>';
+        }
+
+        // Forget Password Function
+        async function handleForgotPassword() {
+            const email = document.getElementById('email').value;
+            if(!email) return alert("Please enter your email address first!");
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+            if(error) alert(error.message);
+            else alert("Password reset link sent to your email!");
         }
     </script>
 </body>
