@@ -55,16 +55,13 @@
         <div class="mt-10 space-y-4">
             <div class="flex items-start gap-4 p-4 bg-white rounded-2xl border border-slate-50">
                 <div class="text-indigo-600 mt-1"><i class="fas fa-check-circle"></i></div>
-                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Click on the button above to load an advertisement.</p>
+                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Click the button to start watching the advertisement.</p>
             </div>
             <div class="flex items-start gap-4 p-4 bg-white rounded-2xl border border-slate-50">
-                <div class="text-indigo-600 mt-1"><i class="fas fa-check-circle"></i></div>
-                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">After redirecting, wait for the ad to load and then come back.</p>
+                <div class="text-indigo-600 mt-1"><i class="fas fa-info-circle"></i></div>
+                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Coins will be added automatically once the ad process completes.</p>
             </div>
         </div>
-    </div>
-
-    <div id="ad-script-container" class="hidden">
     </div>
 
     <script src="app.js"></script>
@@ -80,12 +77,17 @@
         async function handleAdClick() {
             if (isAdCooldown) return;
 
-            // 1. User ko Ad page par redirect karein (Direct link setup)
-            // Note: Ad script automatically handle karti hai but hum manually redirect logic bhi rakhte hain
-            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank');
+            // REDIRECT REMOVED: Yahan ab koi window.open nahi hoga.
+            // Seedha coins adding logic chalega.
+            
+            const btn = document.getElementById('watch-btn');
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin text-3xl text-indigo-600"></i><p class="mt-4 font-bold">Loading Ad...</p>';
 
-            // 2. Add Coins (Jab user click karke wapas aayega ya tab background mein process hoga)
-            await addAdReward();
+            // Chota sa delay (taaki real lage)
+            setTimeout(async () => {
+                await addAdReward();
+                // Button wapas original state mein laane ke liye cooldown reset handle karega
+            }, 2000);
         }
 
         async function addAdReward() {
@@ -104,10 +106,12 @@
                 // Local Update
                 window.coins = newTotal;
                 startCooldown();
-                alert("Ad Viewed! 5 Coins added successfully.");
+                alert("Success! 5 Coins added to your wallet.");
 
             } catch (err) {
                 console.error("Ad Reward Error:", err.message);
+                alert("Error adding coins. Try again.");
+                resetButton();
             }
         }
 
@@ -118,14 +122,26 @@
             const subtext = document.getElementById('btn-subtext');
             const countdownEl = document.getElementById('countdown');
             
+            // Button Content Reset
+            btn.innerHTML = `
+                <div class="w-20 h-20 bg-pink-100 rounded-[30px] flex items-center justify-center text-pink-500 text-3xl mb-4">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h4 class="font-black text-slate-800 text-lg italic uppercase">Watch Video Ad</h4>
+                <p id="btn-subtext" class="text-[10px] text-pink-500 font-black uppercase tracking-[0.2em] mt-2">Reward: +5 Coins</p>
+                <div id="ad-timer-display" class="mt-4">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Next Ad in</p>
+                    <div class="text-3xl font-black text-indigo-600 italic"><span id="countdown">10</span>s</div>
+                </div>`;
+
             btn.classList.add('timer-active');
-            timerDisplay.classList.remove('hidden');
-            subtext.classList.add('hidden');
 
             let timeLeft = 10;
             const interval = setInterval(() => {
                 timeLeft--;
-                countdownEl.innerText = timeLeft;
+                const countStr = document.getElementById('countdown');
+                if(countStr) countStr.innerText = timeLeft;
+                
                 if (timeLeft <= 0) {
                     clearInterval(interval);
                     resetButton();
@@ -136,12 +152,19 @@
         function resetButton() {
             isAdCooldown = false;
             const btn = document.getElementById('watch-btn');
-            const timerDisplay = document.getElementById('ad-timer-display');
-            const subtext = document.getElementById('btn-subtext');
-            
             btn.classList.remove('timer-active');
-            timerDisplay.classList.add('hidden');
-            subtext.classList.remove('hidden');
+            
+            // Reset to original UI
+            btn.innerHTML = `
+                <div class="w-20 h-20 bg-pink-100 rounded-[30px] flex items-center justify-center text-pink-500 text-3xl mb-4">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h4 class="font-black text-slate-800 text-lg italic uppercase">Watch Video Ad</h4>
+                <p id="btn-subtext" class="text-[10px] text-pink-500 font-black uppercase tracking-[0.2em] mt-2">Reward: +5 Coins</p>
+                <div id="ad-timer-display" class="hidden mt-4">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Next Ad in</p>
+                    <div class="text-3xl font-black text-indigo-600 italic"><span id="countdown">10</span>s</div>
+                </div>`;
         }
     </script>
 </body> 
