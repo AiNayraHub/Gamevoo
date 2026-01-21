@@ -49,7 +49,7 @@
 
         <div class="bg-white rounded-[35px] p-4 premium-shadow space-y-1">
             
-            <a href="https://t.me/+919559123316" target="_blank" class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-3xl transition-all">
+            <a href="https://t.me/+919559123316" target="_blank" class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-3xl transition-all border-b border-slate-50">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center text-xl shadow-sm">
                         <i class="fab fa-telegram-plane"></i>
@@ -62,7 +62,33 @@
                 <i class="fas fa-external-link-alt text-slate-300 text-xs"></i>
             </a>
 
-            <div class="flex items-center justify-between p-4">
+            <a href="privacy.html" class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-3xl transition-all border-b border-slate-50">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-xl shadow-sm">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-700 italic">Privacy Policy</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Our Data Protection Rules</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+            </a>
+
+            <a href="terms.html" class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-3xl transition-all border-b border-slate-50">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-xl shadow-sm">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-700 italic">Terms & Conditions</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">App Usage Guidelines</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
+            </a>
+
+            <div class="flex items-center justify-between p-4 border-b border-slate-50">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-xl shadow-sm">
                         <i class="fas fa-id-badge"></i>
@@ -104,23 +130,17 @@
 
     <script src="app.js"></script>
     <script>
-        // 1. Database Connection Sync
         function fetchAndFillProfile() {
             if (typeof userId !== 'undefined' && userId !== null) {
-                // Fill Email
                 document.getElementById('p-email').innerText = userEmail || "Earning Player";
-                // Fill UID
                 document.getElementById('p-uid').innerText = "UID: " + userId.substring(0, 10);
                 document.getElementById('p-full-uid').innerText = userId;
-                // Fill Balance
                 document.getElementById('p-coins').innerText = coins || 0;
             } else {
-                // If app.js not ready, try again
                 setTimeout(fetchAndFillProfile, 500);
             }
         }
 
-        // Live Balance Refresh (Every 1 second)
         setInterval(() => {
             if(typeof coins !== 'undefined') {
                 document.getElementById('p-coins').innerText = coins;
@@ -129,22 +149,20 @@
 
         window.onload = fetchAndFillProfile;
 
-        // 2. Full Working Logout
+        // Logout logic updated to English
         async function handleLogout() {
             const logoutBtn = document.getElementById('logout-btn');
             
-            if(!confirm("Bhai, kya aap logout karna chahte hain?")) return;
+            if(!confirm("Are you sure you want to log out from this session?")) return;
 
             try {
                 logoutBtn.disabled = true;
                 logoutBtn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> DISCONNECTING...';
 
-                // Real Supabase Logout
                 const { error } = await supabaseClient.auth.signOut();
                 
                 if (error) throw error;
 
-                // On Success: Clear history & go to login
                 console.log("Logged out successfully");
                 window.location.replace("login.html"); 
 
@@ -156,5 +174,5 @@
         }
     </script>
 </body>
-    </html>
+                            </html>
     
