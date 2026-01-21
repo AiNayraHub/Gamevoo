@@ -81,10 +81,10 @@
             const btn = document.getElementById('main-withdraw-btn');
 
             if (!upi) return alert("Enter Your UPI ID!");
-            if (withdrawRs === 0) return alert("Pehle amount toh select karo!");
+            if (withdrawRs === 0) return alert("Select Your Balance!");
             
             // Check current global coins (from app.js)
-            if (window.coins < withdrawCoins) return alert("Balance kam hai!");
+            if (window.coins < withdrawCoins) return alert("Low Your Balance!");
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
@@ -93,7 +93,7 @@
             const success = await processWithdrawRequest(withdrawCoins, upi);
             
             if (success) {
-                alert(`🎉Congratulations 🎉! ₹${withdrawRs} ki request successful waiting for 24 hour.`);
+                alert(`🎉Congratulations 🎉! ₹${withdrawRs} Send request successful waiting for 24-48 hour.`);
                 document.getElementById('upi-id').value = "";
             }
 
