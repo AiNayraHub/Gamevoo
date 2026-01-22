@@ -3,95 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offer Wall - Gamevoo</title>
+    <title>Premium Tasks | AI Nayra Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script type="text/javascript" src="https://singingfiles.com/script_include.php?id=1869655"></script>
+
     <style>
-        .premium-card { background: linear-gradient(135deg, #4f46e5, #6366f1); }
-        .coming-soon-badge { animation: pulse 2s infinite; }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .shimmer {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;400;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #050505; }
+        .tech-font { font-family: 'Orbitron', sans-serif; }
+        .red-glow { box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); }
+        .glass-card { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(220, 38, 38, 0.1); }
     </style>
 </head>
-<body class="bg-[#f8fafc] font-sans pb-24">
+<body class="text-gray-100 min-h-screen">
 
-    <div class="bg-white p-5 flex items-center border-b border-slate-100 sticky top-0 z-50">
-        <button onclick="window.location.href='home.html'" class="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center text-indigo-600 border border-slate-100 shadow-sm active:scale-90 transition-all">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <h1 class="ml-4 font-black text-slate-800 italic uppercase tracking-widest text-sm">Offer Wall</h1>
-    </div>
-
-    <div class="p-6">
-        <div class="premium-card p-8 rounded-[40px] text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
-            <div class="relative z-10">
-                <h2 class="text-2xl font-black italic tracking-tighter uppercase">High Paying Tasks</h2>
-                <p class="text-indigo-100 text-[10px] font-bold mt-1 uppercase tracking-[0.2em]">Complete & Earn Big Rewards</p>
-                <div class="mt-6 inline-flex items-center bg-white/20 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest border border-white/20">
-                    <i class="fas fa-star text-yellow-300 mr-2"></i> Premium Offers
-                </div>
+    <nav class="p-5 border-b border-red-900/30 flex justify-between items-center glass-card sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/50">
+                <i class="fas fa-microchip text-white text-sm"></i>
             </div>
-            <i class="fas fa-rocket absolute -right-4 -bottom-4 text-8xl text-white/10 rotate-12"></i>
+            <h1 class="tech-font font-black italic tracking-tighter text-xl text-white">
+                AI NAYRA <span class="text-red-600">HUB</span>
+            </h1>
         </div>
-    </div>
+        <div class="bg-red-600/10 border border-red-600/50 px-4 py-1.5 rounded-full flex items-center gap-2">
+            <span class="text-yellow-400 text-xs">🪙</span>
+            <span id="userCoins" class="text-xs font-bold tech-font tracking-widest">0000</span>
+        </div>
+    </nav>
 
-    <div class="px-6 space-y-4">
-        <h3 class="font-black text-slate-400 text-[10px] uppercase tracking-[0.3em] ml-2 mb-4">Available Soon</h3>
+    <header class="p-8 text-center">
+        <h2 class="text-3xl font-black tech-font mb-2">PREMIUM <span class="text-red-600 underline decoration-double">OFFERS</span></h2>
+        <p class="text-gray-400 text-xs uppercase tracking-[0.2em]">Complete high-paying tasks to earn coins</p>
+    </header>
+
+    <main class="max-w-2xl mx-auto p-4">
         
-        <div class="bg-white p-4 rounded-[30px] border border-slate-100 shadow-sm flex items-center justify-between opacity-60">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 shimmer rounded-2xl"></div>
+        <div class="glass-card rounded-3xl p-6 mb-8 red-glow border-l-4 border-l-red-600">
+            <div class="flex gap-4">
+                <div class="text-red-600 text-2xl pt-1">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
                 <div>
-                    <div class="h-3 w-32 shimmer rounded-full mb-2"></div>
-                    <div class="h-2 w-20 shimmer rounded-full"></div>
+                    <h3 class="font-bold text-white mb-1 uppercase text-sm tracking-wider">AI Verified Tasks</h3>
+                    <p class="text-gray-400 text-xs leading-relaxed">Sare offers 100% secure hain. Task poora hone ke 5-10 minutes ke andar coins aapke wallet mein add ho jayenge.</p>
                 </div>
             </div>
-            <div class="h-8 w-16 shimmer rounded-xl"></div>
         </div>
 
-        <div class="bg-white p-4 rounded-[30px] border border-slate-100 shadow-sm flex items-center justify-between opacity-60">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 shimmer rounded-2xl"></div>
-                <div>
-                    <div class="h-3 w-24 shimmer rounded-full mb-2"></div>
-                    <div class="h-2 w-16 shimmer rounded-full"></div>
+        <div class="space-y-4">
+            <button onclick="call_locker();" class="w-full bg-red-600 hover:bg-red-700 text-white p-6 rounded-[2rem] flex items-center justify-between group transition-all duration-300 transform active:scale-95 shadow-xl shadow-red-600/20">
+                <div class="flex items-center gap-4 text-left">
+                    <div class="bg-black/20 p-4 rounded-2xl group-hover:bg-black/40 transition-colors">
+                        <i class="fas fa-bolt text-2xl text-yellow-400"></i>
+                    </div>
+                    <div>
+                        <span class="block font-black text-lg tech-font">OPEN OFFERWALL</span>
+                        <span class="text-[10px] font-bold text-red-200 opacity-80 uppercase">Available Offers: 10+</span>
+                    </div>
                 </div>
-            </div>
-            <div class="h-8 w-16 shimmer rounded-xl"></div>
-        </div>
-    </div>
-
-    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center px-8 z-40 pointer-events-none">
-        <div class="bg-white p-10 rounded-[50px] shadow-2xl text-center border-4 border-indigo-600/10 pointer-events-auto">
-            <div class="w-20 h-20 bg-indigo-50 rounded-[30px] flex items-center justify-center text-indigo-600 text-3xl mx-auto mb-6 shadow-inner">
-                <i class="fas fa-tools animate-bounce"></i>
-            </div>
-            <h2 class="text-3xl font-black text-slate-800 italic uppercase tracking-tighter">Coming Soon</h2>
-            <p class="text-slate-400 mt-3 text-[10px] font-bold uppercase tracking-widest leading-loose">
-                We are integrating top offerwall <br> providers for maximum earnings!
-            </p>
-            <button onclick="window.location.href='home.html'" class="mt-8 bg-indigo-600 text-white px-8 py-4 rounded-3xl font-black text-[10px] tracking-[0.2em] shadow-xl shadow-indigo-200 uppercase active:scale-95 transition-all">
-                Back to Home
+                <i class="fas fa-chevron-right text-xl opacity-50 group-hover:translate-x-2 transition-transform"></i>
             </button>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-card p-4 rounded-3xl text-center">
+                    <i class="fas fa-globe text-red-600 mb-2"></i>
+                    <span class="block text-[10px] text-gray-500 font-bold uppercase">Global Ads</span>
+                </div>
+                <div class="glass-card p-4 rounded-3xl text-center">
+                    <i class="fas fa-clock text-red-600 mb-2"></i>
+                    <span class="block text-[10px] text-gray-500 font-bold uppercase">Fast Payout</span>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="text-center mt-10">
-        <p class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">&copy; 2026 GAMEVOO EARN</p>
-    </div>
+    </main>
 
+    <footer class="mt-20 p-10 text-center border-t border-white/5">
+        <p class="text-[10px] text-gray-600 font-bold tracking-widest uppercase">Powered by AI Nayra Hub Tech</p>
+    </footer>
+
+    <script>
+        // CPAGrip function call logic
+        function call_locker() {
+            // Singingfiles.com script typically provides this function
+            // Agar script load ho gayi hai, toh yeh function automatically offer wall khol dega
+            if (typeof _gp === 'function' || typeof call_locker === 'function') {
+                // Yahan script ke documentation ke hisab se function trigger hota hai
+                // Mostly script inject hote hi events attach kar deti hai
+                console.log("CPAGrip Locker Triggered...");
+            }
+        }
+
+        // Dummy Coin update (In reality, use Supabase here)
+        document.getElementById('userCoins').innerText = "1250";
+    </script>
 </body>
-              </html>
-              
+</html>
