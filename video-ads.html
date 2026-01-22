@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Task - Gamevoo </title>
+    <title>Watch & Earn | Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: white; }
-        .tech-font { font-family: 'Orbitron', sans-serif; }
-        .red-glow { box-shadow: 0 0 30px rgba(220, 38, 38, 0.3); }
-        .glass { background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(220, 38, 38, 0.2); }
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0c0c0c; color: white; }
+        .game-font { font-family: 'Press Start 2P', cursive; }
+        .pixel-border { border-image: url("data:image/svg+xml;utf8,<svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'><rect x='0.5' y='0.5' width='15' height='15' fill='none' stroke='%23ff0000'/></svg>") 8 / 8px stretch; }
+        .pixel-shadow { box-shadow: 4px 4px 0px #ff0000; }
         
         /* Loading Animation */
         .loader {
-            border-top-color: #dc2626;
+            border-top-color: #ff0000;
             animation: spinner 1.5s linear infinite;
         }
         @keyframes spinner {
@@ -27,103 +29,140 @@
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <nav class="p-5 flex justify-between items-center glass sticky top-0 z-50">
+    <script>
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your Supabase Project URL
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your Supabase Anon Key
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Dummy User ID for now (In real app, you'd get this from user login)
+        const USER_ID = 'your_static_user_id_123'; // Replace with a real user ID or manage via sessions
+
+        async function fetchUserCoins() {
+            const { data, error } = await supabase
+                .from('users') // Your user table name
+                .select('coins')
+                .eq('id', USER_ID)
+                .single();
+
+            if (error) {
+                console.error('Error fetching coins:', error.message);
+                document.getElementById('coin-balance').innerText = 'ERROR';
+                return 0;
+            }
+            if (data) {
+                document.getElementById('coin-balance').innerText = data.coins;
+                return data.coins;
+            }
+            return 0;
+        }
+
+        async function updateUserCoins(newCoins) {
+            const { error } = await supabase
+                .from('users') // Your user table name
+                .update({ coins: newCoins })
+                .eq('id', USER_ID);
+
+            if (error) {
+                console.error('Error updating coins:', error.message);
+                alert('Error: Coins could not be updated.');
+            } else {
+                document.getElementById('coin-balance').innerText = newCoins;
+                console.log('Coins updated successfully!');
+            }
+        }
+
+        // Fetch coins on page load
+        document.addEventListener('DOMContentLoaded', fetchUserCoins);
+    </script>
+
+    <nav class="p-4 flex justify-between items-center bg-black/80 backdrop-blur-sm border-b border-red-800 sticky top-0 z-50">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/50">
-                <i class="fas fa-play text-white text-[10px]"></i>
-            </div>
-            <h1 class="tech-font text-lg tracking-tighter">AI <span class="text-red-600">NAYRA</span></h1>
+            <h1 class="game-font text-xl text-white">GAM<span class="text-red-600">EVOO</span></h1>
         </div>
-        <div class="bg-zinc-900 border border-red-600/30 px-4 py-1 rounded-full flex items-center gap-2">
-            <span class="text-yellow-400 text-xs italic">🪙</span>
-            <span id="coin-balance" class="text-xs font-black tech-font">0000</span>
+        <div class="bg-red-700/20 border border-red-600 px-3 py-1 rounded-full flex items-center gap-2 pixel-shadow">
+            <span class="text-yellow-300 text-xs">🪙</span>
+            <span id="coin-balance" class="text-sm font-bold game-font">---</span>
         </div>
     </nav>
 
-    <main class="flex-1 flex flex-col items-center justify-center p-6">
+    <main class="flex-1 flex flex-col items-center justify-center p-6 bg-texture-pattern">
         
-        <div class="w-full max-w-sm glass rounded-[2.5rem] overflow-hidden red-glow relative">
-            <div class="relative aspect-video bg-zinc-800 flex items-center justify-center group overflow-hidden">
-                <div id="video-overlay" class="absolute inset-0 bg-black/60 z-10 flex flex-col items-center justify-center text-center p-4">
-                    <div id="play-btn" onclick="startTask()" class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-2xl shadow-red-600/50">
-                        <i class="fas fa-play text-white ml-1"></i>
+        <div class="w-full max-w-md bg-zinc-900 pixel-border p-6 rounded-xl pixel-shadow">
+            <div class="relative aspect-video bg-black flex items-center justify-center group overflow-hidden border-4 border-zinc-700">
+                <div id="video-overlay" class="absolute inset-0 bg-black/80 z-10 flex flex-col items-center justify-center text-center p-4">
+                    <div id="play-btn" onclick="startTask()" class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all pixel-shadow">
+                        <i class="fas fa-play text-white text-2xl ml-1"></i>
                     </div>
-                    <p class="mt-4 text-[10px] font-bold tracking-widest text-red-400 uppercase">Click to Start Deployment</p>
+                    <p class="mt-4 text-[10px] font-bold tracking-widest text-red-400 uppercase game-font">Press START to Watch</p>
                 </div>
                 
-                <div id="ad-container" class="opacity-0 absolute">
+                <div id="ad-container" class="opacity-0 absolute"> 
                     <script src="https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js"></script>
                 </div>
 
-                <img src="https://images.unsplash.com/photo-1614728263952-84ea206f99b6?auto=format&fit=crop&w=400" alt="Tech Background" class="w-full h-full object-cover">
+                <img src="https://images.unsplash.com/photo-1549725227-80949d2110c4?auto=format&fit=crop&w=600&q=80" alt="Retro Game Screen" class="w-full h-full object-cover opacity-50">
             </div>
 
-            <div class="p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 class="font-black text-lg leading-none uppercase">Neural Task #482</h2>
-                        <span class="text-[10px] text-zinc-500 font-bold tracking-tighter">INTERNATIONAL SERVER ADS</span>
-                    </div>
-                    <div class="bg-red-600 text-[10px] font-black px-3 py-1 rounded-lg">+5 COINS</div>
+            <div class="p-4 text-center">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-black text-xl text-white game-font">Daily Mission #1</h2>
+                    <div class="bg-yellow-400 text-black text-sm font-black px-4 py-1 rounded-full game-font pixel-shadow">+5 COINS</div>
                 </div>
 
                 <div id="progress-section" class="hidden">
-                    <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden mb-2">
+                    <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden mb-3 border border-zinc-700">
                         <div id="progress-bar" class="bg-red-600 h-full w-0 transition-all duration-1000"></div>
                     </div>
-                    <p id="timer-text" class="text-[10px] text-center font-bold text-zinc-400 uppercase italic">Verifying Data: 15s</p>
+                    <p id="timer-text" class="text-xs text-center font-bold text-gray-400 uppercase game-font">Verifying... <span id="time-left">15</span>s</p>
                 </div>
             </div>
         </div>
 
-        <div class="mt-8 text-center space-y-2 opacity-50">
-            <p class="text-[9px] uppercase font-bold tracking-[0.3em]">Wait for verification after clicking</p>
-            <p class="text-[9px] uppercase font-bold text-red-500 tracking-[0.3em]">Do not close the advertisement tab</p>
+        <div class="mt-8 text-center text-zinc-500 space-y-1">
+            <p class="text-[9px] uppercase font-bold game-font">Important: Do NOT close the ad tab until verified.</p>
+            <p class="text-[9px] uppercase font-bold text-red-500 game-font">Failure to do so will result in no reward.</p>
         </div>
     </main>
 
+    <footer class="p-4 text-center text-zinc-600 text-[10px] uppercase font-bold border-t border-red-900/40 bg-black/80 backdrop-blur-sm">
+        <p class="game-font">Gamevoo Labs © 2023</p>
+    </footer>
+
     <script>
-        // Supabase/Data Connection Logic
-        let coins = parseInt(localStorage.getItem('userCoins')) || 0;
-        document.getElementById('coin-balance').innerText = coins;
+        let currentCoins = 0; // Will be updated by fetchUserCoins
 
-        function startTask() {
-            // 1. Open Adsterra Ad (Redirect to the Ad link)
-            // Isse user ads par jayega aur aapka revenue generate hoga
-            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank');
-
-            // 2. Start Verification Timer on our page
-            document.getElementById('video-overlay').classList.add('hidden');
+        async function startTask() {
+            document.getElementById('play-btn').classList.add('hidden'); // Hide play button
+            document.getElementById('video-overlay').classList.add('bg-black/90'); // Darker overlay
             document.getElementById('progress-section').classList.remove('hidden');
 
+            // 1. Open Adsterra Ad in a new tab
+            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank');
+
+            // 2. Start Verification Timer on Gamevoo page
             let timeLeft = 15; // 15 Seconds verification time
             const progressBar = document.getElementById('progress-bar');
-            const timerText = document.getElementById('timer-text');
+            const timerText = document.getElementById('time-left');
 
-            const interval = setInterval(() => {
+            const interval = setInterval(async () => {
                 timeLeft--;
                 let progressPercentage = ((15 - timeLeft) / 15) * 100;
                 progressBar.style.width = progressPercentage + "%";
-                timerText.innerText = "Verifying Data: " + timeLeft + "s";
+                timerText.innerText = timeLeft;
 
                 if (timeLeft <= 0) {
                     clearInterval(interval);
-                    addCoins();
+                    await addCoins(); // Wait for coins to be added
+                    alert("✅ Mission Complete! 5 Coins added to your Gamevoo wallet.");
+                    location.reload(); // Refresh page to show updated balance and reset task
                 }
             }, 1000);
         }
 
-        function addCoins() {
-            // 3. Add 5 Coins to Data
-            coins += 5;
-            localStorage.setItem('userCoins', coins);
-            document.getElementById('coin-balance').innerText = coins;
-            
-            // 4. Success UI
-            alert("✅ Verification Complete! 5 Coins added to your AI Hub wallet.");
-            
-            // Reset UI or Redirect back to home
-            location.reload(); 
+        async function addCoins() {
+            currentCoins = await fetchUserCoins(); // Fetch latest balance before adding
+            const newCoins = currentCoins + 5;
+            await updateUserCoins(newCoins); // Update coins in Supabase
         }
     </script>
 </body>
