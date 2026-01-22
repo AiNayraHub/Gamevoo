@@ -3,57 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watch & Earn | Gamevoo</title>
+    <title>Earn Coins | Gamevoo Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0c0c0c; color: white; }
-        .game-font { font-family: 'Press Start 2P', cursive; }
-        .pixel-border { border-image: url("data:image/svg+xml;utf8,<svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'><rect x='0.5' y='0.5' width='15' height='15' fill='none' stroke='%23ff0000'/></svg>") 8 / 8px stretch; }
-        .pixel-shadow { box-shadow: 4px 4px 0px #ff0000; }
-        
-        /* Loading Animation */
-        .loader {
-            border-top-color: #ff0000;
-            animation: spinner 1.5s linear infinite;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #0d1117; color: #e6edf3; }
+        .brand-font { font-family: 'Montserrat', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1c2733, #0d1117); }
+        .card { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; }
+        .btn-primary { background-color: #238636; color: white; transition: background-color 0.2s; }
+        .btn-primary:hover { background-color: #2ea043; }
+        .red-accent { color: #db6d28; /* Changed accent color to a warm orange for professional contrast */ }
+        .progress-bar-fill { background-color: #238636; } /* Green for progress */
+
+        /* Pulsating effect for active status */
+        .pulsate {
+            animation: pulsate 1.5s infinite;
         }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes pulsate {
+            0% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(35, 134, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0); }
         }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
     <script>
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your Supabase Project URL
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your Supabase Anon Key
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // REPLACE WITH YOUR SUPABASE PROJECT URL
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // REPLACE WITH YOUR SUPABASE ANON KEY
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Dummy User ID for now (In real app, you'd get this from user login)
-        const USER_ID = 'your_static_user_id_123'; // Replace with a real user ID or manage via sessions
+        // --- IMPORTANT: User ID Management ---
+        // For a real earning site, you MUST have a proper user authentication system.
+        // For now, using a static ID. In production, this would come from a logged-in user session.
+        const USER_ID = 'gamevoo_test_user_001'; // !!! REPLACE WITH A REAL USER ID (e.g., from login/session) !!!
 
         async function fetchUserCoins() {
             const { data, error } = await supabase
-                .from('users') // Your user table name
+                .from('users') // Your user table name (e.g., 'profiles', 'app_users')
                 .select('coins')
                 .eq('id', USER_ID)
                 .single();
 
             if (error) {
                 console.error('Error fetching coins:', error.message);
-                document.getElementById('coin-balance').innerText = 'ERROR';
+                document.getElementById('coin-balance').innerText = '0';
                 return 0;
             }
             if (data) {
-                document.getElementById('coin-balance').innerText = data.coins;
+                document.getElementById('coin-balance').innerText = data.coins.toLocaleString(); // Format with commas
                 return data.coins;
             }
+            // If user not found, create one with 0 coins
+            await createUserIfNotExist(USER_ID);
+            document.getElementById('coin-balance').innerText = '0';
             return 0;
+        }
+
+        async function createUserIfNotExist(userId) {
+            const { data, error } = await supabase
+                .from('users')
+                .select('id')
+                .eq('id', userId)
+                .single();
+
+            if (!data) { // If user doesn't exist, insert new one
+                const { error: insertError } = await supabase
+                    .from('users')
+                    .insert([{ id: userId, coins: 0 }]);
+
+                if (insertError) {
+                    console.error('Error creating user:', insertError.message);
+                } else {
+                    console.log('New user created successfully:', userId);
+                }
+            }
         }
 
         async function updateUserCoins(newCoins) {
@@ -64,10 +92,10 @@
 
             if (error) {
                 console.error('Error updating coins:', error.message);
-                alert('Error: Coins could not be updated.');
+                alert('Error: Coins could not be updated. Please try again.');
             } else {
-                document.getElementById('coin-balance').innerText = newCoins;
-                console.log('Coins updated successfully!');
+                document.getElementById('coin-balance').innerText = newCoins.toLocaleString();
+                console.log('Coins updated successfully to:', newCoins);
             }
         }
 
@@ -75,69 +103,94 @@
         document.addEventListener('DOMContentLoaded', fetchUserCoins);
     </script>
 
-    <nav class="p-4 flex justify-between items-center bg-black/80 backdrop-blur-sm border-b border-red-800 sticky top-0 z-50">
+    <nav class="p-4 flex justify-between items-center gradient-bg sticky top-0 z-50 shadow-lg border-b border-gray-800">
         <div class="flex items-center gap-2">
-            <h1 class="game-font text-xl text-white">GAM<span class="text-red-600">EVOO</span></h1>
+            <i class="fas fa-coins text-yellow-500 text-xl"></i>
+            <h1 class="brand-font text-2xl font-bold text-white">GAM<span class="red-accent">EVOO</span></h1>
         </div>
-        <div class="bg-red-700/20 border border-red-600 px-3 py-1 rounded-full flex items-center gap-2 pixel-shadow">
-            <span class="text-yellow-300 text-xs">🪙</span>
-            <span id="coin-balance" class="text-sm font-bold game-font">---</span>
+        <div class="flex items-center card px-4 py-2 rounded-full">
+            <span class="text-yellow-400 text-base mr-2"><i class="fas fa-wallet"></i></span>
+            <span id="coin-balance" class="text-lg font-bold brand-font text-green-400">0</span>
         </div>
     </nav>
 
-    <main class="flex-1 flex flex-col items-center justify-center p-6 bg-texture-pattern">
-        
-        <div class="w-full max-w-md bg-zinc-900 pixel-border p-6 rounded-xl pixel-shadow">
-            <div class="relative aspect-video bg-black flex items-center justify-center group overflow-hidden border-4 border-zinc-700">
-                <div id="video-overlay" class="absolute inset-0 bg-black/80 z-10 flex flex-col items-center justify-center text-center p-4">
-                    <div id="play-btn" onclick="startTask()" class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all pixel-shadow">
-                        <i class="fas fa-play text-white text-2xl ml-1"></i>
+    <main class="flex-1 p-6">
+        <div class="max-w-xl mx-auto space-y-6">
+
+            <div class="card p-6 flex items-center justify-between shadow-lg">
+                <div>
+                    <h2 class="text-xl font-bold brand-font">Welcome, User!</h2>
+                    <p class="text-sm text-gray-400">Your daily tasks await.</p>
+                </div>
+                <div class="text-center">
+                    <span class="block text-green-500 text-sm font-semibold">STATUS</span>
+                    <span class="inline-block h-3 w-3 bg-green-500 rounded-full pulsate"></span> <span class="text-xs text-gray-500">Active</span>
+                </div>
+            </div>
+
+            <div class="card p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold brand-font">Watch & Earn Mission</h3>
+                    <span class="bg-green-700/30 text-green-400 text-xs font-semibold px-3 py-1 rounded-full">+5 Coins</span>
+                </div>
+
+                <div class="relative w-full bg-black rounded-lg aspect-video flex items-center justify-center overflow-hidden mb-4 border border-gray-700">
+                    <div id="video-overlay" class="absolute inset-0 bg-black/80 z-10 flex flex-col items-center justify-center p-4">
+                        <button id="play-btn" onclick="startTask()" class="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-transform shadow-xl shadow-green-600/40">
+                            <i class="fas fa-play text-white text-2xl ml-1"></i>
+                        </button>
+                        <p class="mt-4 text-xs font-bold tracking-wider text-green-400 uppercase">Click to Start Video Ad</p>
                     </div>
-                    <p class="mt-4 text-[10px] font-bold tracking-widest text-red-400 uppercase game-font">Press START to Watch</p>
+                    
+                    <div id="ad-container" class="opacity-0 absolute">
+                        <script src="https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js"></script>
+                    </div>
+
+                    <img src="https://images.unsplash.com/photo-1620207418301-318991799a73?auto=format&fit=crop&w=800&q=80" alt="Video Placeholder" class="w-full h-full object-cover opacity-60">
+                </div>
+
+                <div id="progress-section" class="hidden text-center">
+                    <p class="text-sm font-semibold mb-2 text-gray-300">Verification in progress...</p>
+                    <div class="w-full bg-gray-700 h-2 rounded-full overflow-hidden mb-2">
+                        <div id="progress-bar" class="progress-bar-fill h-full w-0 transition-all duration-1000"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 font-bold uppercase">Please wait: <span id="time-left">15</span> seconds</p>
                 </div>
                 
-                <div id="ad-container" class="opacity-0 absolute"> 
-                    <script src="https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js"></script>
-                </div>
-
-                <img src="https://images.unsplash.com/photo-1549725227-80949d2110c4?auto=format&fit=crop&w=600&q=80" alt="Retro Game Screen" class="w-full h-full object-cover opacity-50">
+                <p id="instruction-text" class="text-xs text-gray-500 text-center mt-4">
+                    Important: Do not close the new ad tab until the timer finishes.
+                </p>
             </div>
 
-            <div class="p-4 text-center">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-black text-xl text-white game-font">Daily Mission #1</h2>
-                    <div class="bg-yellow-400 text-black text-sm font-black px-4 py-1 rounded-full game-font pixel-shadow">+5 COINS</div>
-                </div>
-
-                <div id="progress-section" class="hidden">
-                    <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden mb-3 border border-zinc-700">
-                        <div id="progress-bar" class="bg-red-600 h-full w-0 transition-all duration-1000"></div>
+            <div class="card p-4 shadow-lg flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-poll text-red-500 text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-white">Daily Surveys</h3>
+                        <p class="text-xs text-gray-400">Earn up to 200 Coins per survey</p>
                     </div>
-                    <p id="timer-text" class="text-xs text-center font-bold text-gray-400 uppercase game-font">Verifying... <span id="time-left">15</span>s</p>
                 </div>
+                <button class="bg-gray-700 text-gray-400 text-xs font-semibold px-4 py-2 rounded-full cursor-not-allowed opacity-70">Coming Soon</button>
             </div>
-        </div>
 
-        <div class="mt-8 text-center text-zinc-500 space-y-1">
-            <p class="text-[9px] uppercase font-bold game-font">Important: Do NOT close the ad tab until verified.</p>
-            <p class="text-[9px] uppercase font-bold text-red-500 game-font">Failure to do so will result in no reward.</p>
         </div>
     </main>
 
-    <footer class="p-4 text-center text-zinc-600 text-[10px] uppercase font-bold border-t border-red-900/40 bg-black/80 backdrop-blur-sm">
-        <p class="game-font">Gamevoo Labs © 2023</p>
+    <footer class="p-4 text-center text-gray-500 text-xs mt-auto border-t border-gray-800 gradient-bg">
+        &copy; 2023 Gamevoo. All rights reserved.
     </footer>
 
     <script>
-        let currentCoins = 0; // Will be updated by fetchUserCoins
+        let currentCoins = 0; // Initialized by fetchUserCoins
 
         async function startTask() {
             document.getElementById('play-btn').classList.add('hidden'); // Hide play button
             document.getElementById('video-overlay').classList.add('bg-black/90'); // Darker overlay
             document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('instruction-text').classList.add('hidden'); // Hide initial instruction
 
             // 1. Open Adsterra Ad in a new tab
-            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank');
+            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank', 'noopener,noreferrer');
 
             // 2. Start Verification Timer on Gamevoo page
             let timeLeft = 15; // 15 Seconds verification time
