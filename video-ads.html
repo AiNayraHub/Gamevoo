@@ -3,220 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Coins | Gamevoo Dashboard</title>
+    <title>Watch Ads - Gamevoo</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700&display=swap');
-        body { font-family: 'Poppins', sans-serif; background-color: #0d1117; color: #e6edf3; }
-        .brand-font { font-family: 'Montserrat', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #1c2733, #0d1117); }
-        .card { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; }
-        .btn-primary { background-color: #238636; color: white; transition: background-color 0.2s; }
-        .btn-primary:hover { background-color: #2ea043; }
-        .red-accent { color: #db6d28; /* Changed accent color to a warm orange for professional contrast */ }
-        .progress-bar-fill { background-color: #238636; } /* Green for progress */
-
-        /* Pulsating effect for active status */
-        .pulsate {
-            animation: pulsate 1.5s infinite;
-        }
-        @keyframes pulsate {
-            0% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(35, 134, 54, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0); }
-        }
+        .ad-card { transition: all 0.3s ease; }
+        .ad-card:active { transform: scale(0.95); }
+        .timer-active { pointer-events: none; opacity: 0.6; filter: grayscale(1); }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="bg-[#f8fafc] font-sans">
 
-    <script>
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // REPLACE WITH YOUR SUPABASE PROJECT URL
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // REPLACE WITH YOUR SUPABASE ANON KEY
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // --- IMPORTANT: User ID Management ---
-        // For a real earning site, you MUST have a proper user authentication system.
-        // For now, using a static ID. In production, this would come from a logged-in user session.
-        const USER_ID = 'gamevoo_test_user_001'; // !!! REPLACE WITH A REAL USER ID (e.g., from login/session) !!!
-
-        async function fetchUserCoins() {
-            const { data, error } = await supabase
-                .from('users') // Your user table name (e.g., 'profiles', 'app_users')
-                .select('coins')
-                .eq('id', USER_ID)
-                .single();
-
-            if (error) {
-                console.error('Error fetching coins:', error.message);
-                document.getElementById('coin-balance').innerText = '0';
-                return 0;
-            }
-            if (data) {
-                document.getElementById('coin-balance').innerText = data.coins.toLocaleString(); // Format with commas
-                return data.coins;
-            }
-            // If user not found, create one with 0 coins
-            await createUserIfNotExist(USER_ID);
-            document.getElementById('coin-balance').innerText = '0';
-            return 0;
-        }
-
-        async function createUserIfNotExist(userId) {
-            const { data, error } = await supabase
-                .from('users')
-                .select('id')
-                .eq('id', userId)
-                .single();
-
-            if (!data) { // If user doesn't exist, insert new one
-                const { error: insertError } = await supabase
-                    .from('users')
-                    .insert([{ id: userId, coins: 0 }]);
-
-                if (insertError) {
-                    console.error('Error creating user:', insertError.message);
-                } else {
-                    console.log('New user created successfully:', userId);
-                }
-            }
-        }
-
-        async function updateUserCoins(newCoins) {
-            const { error } = await supabase
-                .from('users') // Your user table name
-                .update({ coins: newCoins })
-                .eq('id', USER_ID);
-
-            if (error) {
-                console.error('Error updating coins:', error.message);
-                alert('Error: Coins could not be updated. Please try again.');
-            } else {
-                document.getElementById('coin-balance').innerText = newCoins.toLocaleString();
-                console.log('Coins updated successfully to:', newCoins);
-            }
-        }
-
-        // Fetch coins on page load
-        document.addEventListener('DOMContentLoaded', fetchUserCoins);
-    </script>
-
-    <nav class="p-4 flex justify-between items-center gradient-bg sticky top-0 z-50 shadow-lg border-b border-gray-800">
-        <div class="flex items-center gap-2">
-            <i class="fas fa-coins text-yellow-500 text-xl"></i>
-            <h1 class="brand-font text-2xl font-bold text-white">GAM<span class="red-accent">EVOO</span></h1>
+    <div class="bg-white p-5 flex justify-between items-center shadow-sm sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <button onclick="window.location.href='home.html'" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-600 border border-slate-100 shadow-sm">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="font-black text-slate-800 italic uppercase tracking-widest text-sm">Watch & Earn</h1>
         </div>
-        <div class="flex items-center card px-4 py-2 rounded-full">
-            <span class="text-yellow-400 text-base mr-2"><i class="fas fa-wallet"></i></span>
-            <span id="coin-balance" class="text-lg font-bold brand-font text-green-400">0</span>
+        
+        <div class="bg-indigo-600 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg shadow-indigo-100">
+            <span class="text-white text-xs font-black italic">🪙 <span id="ad-coins">0</span></span>
         </div>
-    </nav>
+    </div>
 
-    <main class="flex-1 p-6">
-        <div class="max-w-xl mx-auto space-y-6">
-
-            <div class="card p-6 flex items-center justify-between shadow-lg">
-                <div>
-                    <h2 class="text-xl font-bold brand-font">Welcome, User!</h2>
-                    <p class="text-sm text-gray-400">Your daily tasks await.</p>
-                </div>
-                <div class="text-center">
-                    <span class="block text-green-500 text-sm font-semibold">STATUS</span>
-                    <span class="inline-block h-3 w-3 bg-green-500 rounded-full pulsate"></span> <span class="text-xs text-gray-500">Active</span>
-                </div>
+    <div class="p-6">
+        <div class="bg-indigo-50 p-6 rounded-[35px] border border-indigo-100 mb-8 text-center">
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-indigo-600 mx-auto mb-4 shadow-sm">
+                <i class="fas fa-play text-2xl"></i>
             </div>
+            <h2 class="text-xl font-black text-slate-800 italic uppercase tracking-tighter">Ready to Earn?</h2>
+            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Watch ads and get 5 coins instantly</p>
+        </div>
 
-            <div class="card p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold brand-font">Watch & Earn Mission</h3>
-                    <span class="bg-green-700/30 text-green-400 text-xs font-semibold px-3 py-1 rounded-full">+5 Coins</span>
+        <div id="ad-btn-container">
+            <div onclick="handleAdClick()" id="watch-btn" class="ad-card bg-white p-6 rounded-[35px] shadow-xl shadow-slate-100 border border-slate-50 flex flex-col items-center text-center cursor-pointer">
+                <div class="w-20 h-20 bg-pink-100 rounded-[30px] flex items-center justify-center text-pink-500 text-3xl mb-4">
+                    <i class="fas fa-video"></i>
                 </div>
-
-                <div class="relative w-full bg-black rounded-lg aspect-video flex items-center justify-center overflow-hidden mb-4 border border-gray-700">
-                    <div id="video-overlay" class="absolute inset-0 bg-black/80 z-10 flex flex-col items-center justify-center p-4">
-                        <button id="play-btn" onclick="startTask()" class="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-transform shadow-xl shadow-green-600/40">
-                            <i class="fas fa-play text-white text-2xl ml-1"></i>
-                        </button>
-                        <p class="mt-4 text-xs font-bold tracking-wider text-green-400 uppercase">Click to Start Video Ad</p>
-                    </div>
-                    
-                    <div id="ad-container" class="opacity-0 absolute">
-                        <script src="https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js"></script>
-                    </div>
-
-                    <img src="https://images.unsplash.com/photo-1620207418301-318991799a73?auto=format&fit=crop&w=800&q=80" alt="Video Placeholder" class="w-full h-full object-cover opacity-60">
-                </div>
-
-                <div id="progress-section" class="hidden text-center">
-                    <p class="text-sm font-semibold mb-2 text-gray-300">Verification in progress...</p>
-                    <div class="w-full bg-gray-700 h-2 rounded-full overflow-hidden mb-2">
-                        <div id="progress-bar" class="progress-bar-fill h-full w-0 transition-all duration-1000"></div>
-                    </div>
-                    <p class="text-xs text-gray-500 font-bold uppercase">Please wait: <span id="time-left">15</span> seconds</p>
-                </div>
+                <h4 class="font-black text-slate-800 text-lg italic uppercase">Watch Video Ad</h4>
+                <p id="btn-subtext" class="text-[10px] text-pink-500 font-black uppercase tracking-[0.2em] mt-2">Reward: +5 Coins</p>
                 
-                <p id="instruction-text" class="text-xs text-gray-500 text-center mt-4">
-                    Important: Do not close the new ad tab until the timer finishes.
-                </p>
-            </div>
-
-            <div class="card p-4 shadow-lg flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-poll text-red-500 text-xl"></i>
-                    <div>
-                        <h3 class="font-bold text-white">Daily Surveys</h3>
-                        <p class="text-xs text-gray-400">Earn up to 200 Coins per survey</p>
-                    </div>
+                <div id="ad-timer-display" class="hidden mt-4">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Next Ad in</p>
+                    <div class="text-3xl font-black text-indigo-600 italic"><span id="countdown">10</span>s</div>
                 </div>
-                <button class="bg-gray-700 text-gray-400 text-xs font-semibold px-4 py-2 rounded-full cursor-not-allowed opacity-70">Coming Soon</button>
             </div>
-
         </div>
-    </main>
 
-    <footer class="p-4 text-center text-gray-500 text-xs mt-auto border-t border-gray-800 gradient-bg">
-        &copy; 2023 Gamevoo. All rights reserved.
-    </footer>
+        <div class="mt-10 space-y-4">
+            <div class="flex items-start gap-4 p-4 bg-white rounded-2xl border border-slate-50">
+                <div class="text-indigo-600 mt-1"><i class="fas fa-check-circle"></i></div>
+                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Click the button to start watching the advertisement.</p>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-white rounded-2xl border border-slate-50">
+                <div class="text-indigo-600 mt-1"><i class="fas fa-info-circle"></i></div>
+                <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Coins will be added automatically once the ad process completes.</p>
+            </div>
+        </div>
+    </div>
 
+    <script src="app.js"></script>
     <script>
-        let currentCoins = 0; // Initialized by fetchUserCoins
+        let isAdCooldown = false;
 
-        async function startTask() {
-            document.getElementById('play-btn').classList.add('hidden'); // Hide play button
-            document.getElementById('video-overlay').classList.add('bg-black/90'); // Darker overlay
-            document.getElementById('progress-section').classList.remove('hidden');
-            document.getElementById('instruction-text').classList.add('hidden'); // Hide initial instruction
+        // Real-time Coin Balance Sync
+        setInterval(() => {
+            const el = document.getElementById('ad-coins');
+            if(el && typeof window.coins !== 'undefined') el.innerText = window.coins;
+        }, 1000);
 
-            // 1. Open Adsterra Ad in a new tab
-            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank', 'noopener,noreferrer');
+        async function handleAdClick() {
+            if (isAdCooldown) return;
 
-            // 2. Start Verification Timer on Gamevoo page
-            let timeLeft = 15; // 15 Seconds verification time
-            const progressBar = document.getElementById('progress-bar');
-            const timerText = document.getElementById('time-left');
+            // --- REDIRECT ADDED ---
+            // User click karega toh ye ad naye tab mein khulegi
+            window.open('https://pl28524185.effectivegatecpm.com/bf/c1/a6/bfc1a61a48f64ea12833ec7e1adf494c.js', '_blank');
+            
+            const btn = document.getElementById('watch-btn');
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin text-3xl text-indigo-600"></i><p class="mt-4 font-bold">Verifying Ad...</p>';
 
-            const interval = setInterval(async () => {
+            // Ads verification delay
+            setTimeout(async () => {
+                await addAdReward();
+            }, 3000); // 3 seconds delay for verification
+        }
+
+        async function addAdReward() {
+            try {
+                const reward = 5;
+                const newTotal = window.coins + reward;
+
+                // Supabase Update (profiles table)
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .update({ coins: newTotal })
+                    .eq('id', userId);
+
+                if (error) throw error;
+
+                // Local Update
+                window.coins = newTotal;
+                startCooldown();
+                alert("Success! 5 Coins added to your Gamevoo wallet.");
+
+            } catch (err) {
+                console.error("Ad Reward Error:", err.message);
+                alert("Error adding coins. Please check your connection.");
+                resetButton();
+            }
+        }
+
+        function startCooldown() {
+            isAdCooldown = true;
+            const btn = document.getElementById('watch-btn');
+            
+            // UI Update for Timer
+            btn.innerHTML = `
+                <div class="w-20 h-20 bg-pink-100 rounded-[30px] flex items-center justify-center text-pink-500 text-3xl mb-4">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h4 class="font-black text-slate-800 text-lg italic uppercase">Watch Video Ad</h4>
+                <p id="btn-subtext" class="text-[10px] text-pink-500 font-black uppercase tracking-[0.2em] mt-2">Reward: +5 Coins</p>
+                <div id="ad-timer-display" class="mt-4">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Next Ad in</p>
+                    <div class="text-3xl font-black text-indigo-600 italic"><span id="countdown">10</span>s</div>
+                </div>`;
+
+            btn.classList.add('timer-active');
+
+            let timeLeft = 10;
+            const interval = setInterval(() => {
                 timeLeft--;
-                let progressPercentage = ((15 - timeLeft) / 15) * 100;
-                progressBar.style.width = progressPercentage + "%";
-                timerText.innerText = timeLeft;
-
+                const countStr = document.getElementById('countdown');
+                if(countStr) countStr.innerText = timeLeft;
+                
                 if (timeLeft <= 0) {
                     clearInterval(interval);
-                    await addCoins(); // Wait for coins to be added
-                    alert("✅ Mission Complete! 5 Coins added to your Gamevoo wallet.");
-                    location.reload(); // Refresh page to show updated balance and reset task
+                    resetButton();
                 }
             }, 1000);
         }
 
-        async function addCoins() {
-            currentCoins = await fetchUserCoins(); // Fetch latest balance before adding
-            const newCoins = currentCoins + 5;
-            await updateUserCoins(newCoins); // Update coins in Supabase
+        function resetButton() {
+            isAdCooldown = false;
+            const btn = document.getElementById('watch-btn');
+            btn.classList.remove('timer-active');
+            
+            // Reset to original UI
+            btn.innerHTML = `
+                <div class="w-20 h-20 bg-pink-100 rounded-[30px] flex items-center justify-center text-pink-500 text-3xl mb-4">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h4 class="font-black text-slate-800 text-lg italic uppercase">Watch Video Ad</h4>
+                <p id="btn-subtext" class="text-[10px] text-pink-500 font-black uppercase tracking-[0.2em] mt-2">Reward: +5 Coins</p>
+                <div id="ad-timer-display" class="hidden mt-4">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Next Ad in</p>
+                    <div class="text-3xl font-black text-indigo-600 italic"><span id="countdown">10</span>s</div>
+                </div>`;
         }
     </script>
-</body>
-</html>
+</body> 
+    <script src="https://pl28524045.effectivegatecpm.com/76/8f/f0/768ff0a5001c889e2ce08ad194f4d57b.js"></script>
+    </html>
+    
