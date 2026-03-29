@@ -1,105 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Tasks | AI Nayra Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <script type="text/javascript" src="https://singingfiles.com/script_include.php?id=1869655"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>GAMEVOO — Earn Coins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;400;700&display=swap');
-        
-        body { font-family: 'Inter', sans-serif; background-color: #050505; }
-        .tech-font { font-family: 'Orbitron', sans-serif; }
-        .red-glow { box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); }
-        .glass-card { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(220, 38, 38, 0.1); }
-    </style>
+<!-- ✅ CPAGrip / SingingFiles Script -->
+<script type="text/javascript" src="https://singingfiles.com/script_include.php?id=1869655"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#07070f;
+  --surface:#0f0f1a;
+  --card:#131321;
+  --card2:#171728;
+  --border:#ffffff0d;
+  --border2:#ffffff18;
+  --p:#7c6af7;
+  --p2:#a594ff;
+  --gold:#f5c542;
+  --green:#21d07a;
+  --red:#ff5f7e;
+  --cyan:#38d9f5;
+  --text:#eeeeff;
+  --muted:#5a5a80;
+  --sub:#8888aa;
+}
+
+html,body{min-height:100%;overflow-x:hidden}
+
+body{
+  font-family:'Syne',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ░░ BG MESH ░░ */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%,#7c6af722 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 100%,#ff5f7e14 0%,transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 50%,#38d9f508 0%,transparent 60%);
+  pointer-events:none;
+}
+
+/* ░░ GRID TEXTURE ░░ */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  opacity:0.4;
+}
+
+/* ░░ TOP NAV ░░ */
+.topnav{
+  position:sticky;top:0;z-index:200;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 18px;
+  background:rgba(7,7,15,0.92);
+  border-bottom:1px solid var(--border2);
+  backdrop-filter:blur(24px);
+}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:19px;letter-spacing:3px;color:#fff}
+.logo em{color:var(--p);font-style:normal}
+
+.wallet-pill{
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,rgba(124,106,247,.18),rgba(124,106,247,.06));
+  border:1px solid rgba(124,106,247,.35);
+  padding:7px 15px;border-radius:50px;cursor:pointer;
+  transition:border-color .2s;
+}
+.wallet-pill:hover{border-color:var(--p)}
+.wallet-pill .wlabel{font-size:9px;color:var(--sub);letter-spacing:2px;text-transform:uppercase}
+.wallet-pill .wval{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--gold);line-height:1}
+
+/* ░░ PAGE HEAD ░░ */
+.page-head{
+  text-align:center;padding:30px 18px 20px;
+  position:relative;z-index:1;
+}
+.page-head .eyebrow{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--p2);font-weight:700;margin-bottom:8px;display:block;
+}
+.page-head h1{
+  font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;
+  letter-spacing:2px;line-height:1.1;color:#fff;
+}
+.page-head h1 .hl{
+  background:linear-gradient(90deg,var(--p),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.page-head .sub{color:var(--sub);font-size:12px;margin-top:8px;letter-spacing:1px}
+
+/* ░░ MAIN WRAP ░░ */
+.wrap{max-width:480px;margin:0 auto;padding:0 14px 110px;position:relative;z-index:1}
+
+/* ░░ STATS ROW ░░ */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.stat-box{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:16px;padding:14px 10px;text-align:center;
+}
+.stat-box .sv{
+  font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;
+  display:block;margin-bottom:3px;
+}
+.stat-box .sk{font-size:9px;color:var(--sub);letter-spacing:2px;text-transform:uppercase}
+.sv.gold{color:var(--gold)} .sv.green{color:var(--green)} .sv.purple{color:var(--p2)}
+
+/* ░░ MAIN CTA ░░ */
+.mega-btn{
+  width:100%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#7c6af7,#5546e8);
+  border-radius:22px;padding:20px 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;
+  position:relative;overflow:hidden;
+  box-shadow:0 12px 40px rgba(124,106,247,.35);
+  transition:transform .15s,box-shadow .15s;
+}
+.mega-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.mega-btn:hover{transform:translateY(-2px);box-shadow:0 18px 50px rgba(124,106,247,.45)}
+.mega-btn:active{transform:scale(.98)}
+.mega-btn-left{display:flex;align-items:center;gap:14px;text-align:left}
+.mega-icon{
+  width:52px;height:52px;border-radius:15px;
+  background:rgba(0,0,0,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.mega-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:1px;color:#fff;display:block}
+.mega-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:3px;display:block}
+.mega-arrow{font-size:20px;color:rgba(255,255,255,.6)}
+
+/* ░░ PULSE RING ANIM ░░ */
+@keyframes pring{0%{box-shadow:0 12px 40px rgba(124,106,247,.35),0 0 0 0 rgba(124,106,247,.4)}70%{box-shadow:0 12px 40px rgba(124,106,247,.35),0 0 0 14px rgba(124,106,247,0)}100%{box-shadow:0 12px 40px rgba(124,106,247,.35),0 0 0 0 rgba(124,106,247,0)}}
+.mega-btn{animation:pring 2.5s infinite}
+
+/* ░░ HINT ░░ */
+.hint{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:24px;font-size:10px;color:var(--sub);letter-spacing:1px}
+.hint i{font-size:9px;color:var(--green)}
+
+/* ░░ SECTION TITLE ░░ */
+.sec-title{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.sec-title span{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--sub);white-space:nowrap}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border2)}
+
+/* ░░ FILTER CHIPS ░░ */
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;padding:6px 14px;border-radius:50px;
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  border:1px solid var(--border2);background:var(--card);
+  color:var(--sub);cursor:pointer;transition:all .2s;
+}
+.chip.active,.chip:hover{background:rgba(124,106,247,.15);border-color:var(--p);color:var(--p2)}
+
+/* ░░ OFFER CARD ░░ */
+.offer-list{display:flex;flex-direction:column;gap:10px}
+
+.offer-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;padding:16px;
+  text-decoration:none;color:inherit;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:border-color .2s,transform .15s,box-shadow .2s;
+  animation:fadeUp .4s both;
+}
+.offer-card::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:60px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.015));
+  pointer-events:none;
+}
+.offer-card:hover{border-color:var(--border2);transform:translateX(3px);box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.offer-card:active{transform:scale(.99)}
+.offer-card.featured{border-color:rgba(124,106,247,.3);background:linear-gradient(135deg,#131321,#16152a)}
+.offer-card.featured:hover{border-color:var(--p);box-shadow:0 8px 32px rgba(124,106,247,.15)}
+.offer-card.hot-card{border-color:rgba(255,95,126,.25)}
+.offer-card.hot-card:hover{border-color:var(--red);box-shadow:0 8px 32px rgba(255,95,126,.12)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.offer-card:nth-child(1){animation-delay:.05s}
+.offer-card:nth-child(2){animation-delay:.1s}
+.offer-card:nth-child(3){animation-delay:.15s}
+.offer-card:nth-child(4){animation-delay:.2s}
+.offer-card:nth-child(5){animation-delay:.25s}
+.offer-card:nth-child(6){animation-delay:.3s}
+
+/* icon */
+.oc-icon{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.ic-p{background:rgba(124,106,247,.15)}
+.ic-g{background:rgba(33,208,122,.12)}
+.ic-r{background:rgba(255,95,126,.12)}
+.ic-y{background:rgba(245,197,66,.12)}
+.ic-c{background:rgba(56,217,245,.12)}
+
+/* info */
+.oc-info{flex:1;min-width:0}
+.oc-name{font-weight:800;font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.oc-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.oc-tag{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub)}
+.dot{width:3px;height:3px;border-radius:50%;background:var(--border2);flex-shrink:0}
+
+/* right */
+.oc-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.oc-reward{
+  display:flex;align-items:center;gap:4px;
+  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;
+  color:var(--gold);
+}
+.oc-reward small{font-size:8px;color:var(--sub);font-family:'Syne',sans-serif;letter-spacing:1px;text-transform:uppercase;display:block;text-align:right;line-height:1.2}
+
+.badge{font-size:8px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:50px}
+.b-hot{background:rgba(255,95,126,.12);color:var(--red);border:1px solid rgba(255,95,126,.3)}
+.b-new{background:rgba(56,217,245,.1);color:var(--cyan);border:1px solid rgba(56,217,245,.25)}
+.b-easy{background:rgba(33,208,122,.1);color:var(--green);border:1px solid rgba(33,208,122,.25)}
+.b-top{background:rgba(124,106,247,.15);color:var(--p2);border:1px solid rgba(124,106,247,.3)}
+.b-vip{background:rgba(245,197,66,.12);color:var(--gold);border:1px solid rgba(245,197,66,.3)}
+
+/* progress bar */
+.oc-progress{margin-top:10px}
+.prog-track{height:3px;background:var(--border2);border-radius:50px;overflow:hidden;margin-top:3px}
+.prog-fill{height:100%;border-radius:50px;transition:width .8s ease}
+.pf-p{background:linear-gradient(90deg,var(--p),var(--p2))}
+.pf-g{background:linear-gradient(90deg,#21d07a,#38d9f5)}
+.pf-r{background:linear-gradient(90deg,var(--red),#ff9a5f)}
+.prog-label{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);letter-spacing:1px}
+
+/* ░░ NOTICE CARD ░░ */
+.notice{
+  background:linear-gradient(135deg,rgba(33,208,122,.08),rgba(33,208,122,.03));
+  border:1px solid rgba(33,208,122,.2);border-radius:16px;
+  padding:14px 16px;display:flex;align-items:flex-start;gap:12px;
+  margin-bottom:22px;
+}
+.notice i{color:var(--green);margin-top:1px}
+.notice p{font-size:11px;color:var(--sub);line-height:1.7}
+.notice strong{color:var(--text);font-weight:700}
+
+/* ░░ BANNER PROMO ░░ */
+.promo-banner{
+  background:linear-gradient(135deg,#1a1530,#12121f);
+  border:1px solid rgba(124,106,247,.2);border-radius:20px;
+  padding:18px;margin-bottom:22px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.promo-banner::before{
+  content:'';position:absolute;right:-20px;top:-20px;
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,106,247,.2),transparent 70%);
+  pointer-events:none;
+}
+.promo-text .pt-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.promo-text .pt-sub{font-size:11px;color:var(--sub)}
+.promo-badge{
+  background:linear-gradient(135deg,var(--p),#5546e8);
+  border-radius:12px;padding:10px 14px;text-align:center;flex-shrink:0;
+}
+.promo-badge .pb-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:#fff;display:block}
+.promo-badge .pb-label{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.7);text-transform:uppercase}
+
+/* ░░ BOTTOM NAV ░░ */
+.bnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  display:flex;
+  background:rgba(7,7,15,.97);
+  border-top:1px solid var(--border2);
+  backdrop-filter:blur(24px);
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 0 8px;color:var(--muted);font-size:8px;letter-spacing:1.5px;
+  text-transform:uppercase;font-weight:700;cursor:pointer;
+  text-decoration:none;border:none;background:none;
+  transition:color .2s;
+}
+.bn-item i{font-size:19px;transition:filter .2s}
+.bn-item.active{color:var(--p2)}
+.bn-item.active i{filter:drop-shadow(0 0 7px rgba(124,106,247,.7))}
+
+/* ░░ TOAST ░░ */
+.toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:#1a1a2e;border:1px solid var(--p);border-radius:50px;
+  padding:10px 20px;font-size:12px;font-weight:700;color:#fff;letter-spacing:1px;
+  z-index:9999;opacity:0;transition:all .3s;pointer-events:none;
+  white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ░░ RIPPLE ░░ */
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.08);animation:rip .5s linear;pointer-events:none}
+@keyframes rip{from{transform:scale(0);opacity:1}to{transform:scale(4);opacity:0}}
+</style>
 </head>
-<body class="text-gray-100 min-h-screen">
+<body>
 
-    <nav class="p-5 border-b border-red-900/30 flex justify-between items-center glass-card sticky top-0 z-50">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/50">
-                <i class="fas fa-microchip text-white text-sm"></i>
-            </div>
-            <h1 class="tech-font font-black italic tracking-tighter text-xl text-white">
-                AI NAYRA <span class="text-red-600">HUB</span>
-            </h1>
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Opening Offer...</div>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="logo">GAME<em>VOO</em></div>
+  <div class="wallet-pill" onclick="showToast('💰 Wallet Opening...')">
+    <div>
+      <div class="wlabel">Balance</div>
+      <div class="wval" id="coinVal">1,250</div>
+    </div>
+    <span style="color:var(--gold);font-size:16px">🪙</span>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-head">
+  <span class="eyebrow">⚡ Earn Coins Fast</span>
+  <h1>OFFER <span class="hl">WALL</span></h1>
+  <p class="sub">Tasks complete karo · Coins kamao · Redeem karo</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="wrap">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <span class="sv gold">1,250</span>
+      <span class="sk">My Coins</span>
+    </div>
+    <div class="stat-box">
+      <span class="sv green">12</span>
+      <span class="sk">Completed</span>
+    </div>
+    <div class="stat-box">
+      <span class="sv purple">10+</span>
+      <span class="sk">Live Offers</span>
+    </div>
+  </div>
+
+  <!-- PROMO BANNER -->
+  <div class="promo-banner">
+    <div class="promo-text">
+      <div class="pt-title">🔥 Today's Bonus Active!</div>
+      <div class="pt-sub">Pehle 5 tasks pe 2x coins milenge</div>
+    </div>
+    <div class="promo-badge">
+      <span class="pb-val">2X</span>
+      <span class="pb-label">Bonus</span>
+    </div>
+  </div>
+
+  <!-- MAIN CTA BUTTON -->
+  <button class="mega-btn" onclick="triggerLocker(this)">
+    <div class="mega-btn-left">
+      <div class="mega-icon">⚡</div>
+      <div>
+        <span class="mega-title">OPEN OFFERWALL</span>
+        <span class="mega-sub">All Live Offers · Instant Reward</span>
+      </div>
+    </div>
+    <i class="fas fa-chevron-right mega-arrow"></i>
+  </button>
+
+  <div class="hint">
+    <i class="fas fa-circle-check"></i>
+    <span>Task complete hone ke baad 5-10 min mein coins milenge</span>
+  </div>
+
+  <!-- NOTICE -->
+  <div class="notice">
+    <i class="fas fa-shield-halved"></i>
+    <p><strong>100% Verified Offers —</strong> Sare offers trusted networks se hain. Koi bhi personal info share karne ki zaroorat nahi, sirf task complete karo aur reward lo.</p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-row">
+    <div class="chip active" onclick="filterOffers('all', this)">All Offers</div>
+    <div class="chip" onclick="filterOffers('easy', this)">Easy</div>
+    <div class="chip" onclick="filterOffers('hot', this)">🔥 Hot</div>
+    <div class="chip" onclick="filterOffers('survey', this)">Survey</div>
+    <div class="chip" onclick="filterOffers('app', this)">App Install</div>
+    <div class="chip" onclick="filterOffers('game', this)">Games</div>
+  </div>
+
+  <!-- OFFER CARDS -->
+  <div class="sec-title"><span>Featured Offers</span></div>
+
+  <div class="offer-list" id="offerList">
+
+    <!-- ★ OFFER 1 — HOT FEATURED -->
+    <a class="offer-card featured hot-card" data-cat="hot game" href="#" onclick="openOffer(event, 'OFFER_LINK_1', 'Play & Earn')">
+      <div class="oc-icon ic-r">🎮</div>
+      <div class="oc-info">
+        <div class="oc-name">Play & Earn Game</div>
+        <div class="oc-meta">
+          <span class="oc-tag">Game Download</span>
+          <span class="dot"></span>
+          <span class="oc-tag">Level 5 Reach Karo</span>
         </div>
-        <div class="bg-red-600/10 border border-red-600/50 px-4 py-1.5 rounded-full flex items-center gap-2">
-            <span class="text-yellow-400 text-xs">🪙</span>
-            <span id="userCoins" class="text-xs font-bold tech-font tracking-widest">0000</span>
+        <div class="oc-progress">
+          <div class="prog-label"><span>Popularity</span><span>87%</span></div>
+          <div class="prog-track"><div class="prog-fill pf-r" style="width:87%"></div></div>
         </div>
-    </nav>
+      </div>
+      <div class="oc-right">
+        <div class="oc-reward">🪙 500<small>coins</small></div>
+        <span class="badge b-hot">🔥 Hot</span>
+      </div>
+    </a>
 
-    <header class="p-8 text-center">
-        <h2 class="text-3xl font-black tech-font mb-2">PREMIUM <span class="text-red-600 underline decoration-double">OFFERS</span></h2>
-        <p class="text-gray-400 text-xs uppercase tracking-[0.2em]">Complete high-paying tasks to earn coins</p>
-    </header>
-
-    <main class="max-w-2xl mx-auto p-4">
-        
-        <div class="glass-card rounded-3xl p-6 mb-8 red-glow border-l-4 border-l-red-600">
-            <div class="flex gap-4">
-                <div class="text-red-600 text-2xl pt-1">
-                    <i class="fas fa-shield-halved"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-white mb-1 uppercase text-sm tracking-wider">AI Verified Tasks</h3>
-                    <p class="text-gray-400 text-xs leading-relaxed">Sare offers 100% secure hain. Task poora hone ke 5-10 minutes ke andar coins aapke wallet mein add ho jayenge.</p>
-                </div>
-            </div>
+    <!-- ★ OFFER 2 — VIP -->
+    <a class="offer-card featured" data-cat="hot survey" href="#" onclick="openOffer(event, 'OFFER_LINK_2', 'Premium Survey')">
+      <div class="oc-icon ic-y">🏆</div>
+      <div class="oc-info">
+        <div class="oc-name">Premium Survey Task</div>
+        <div class="oc-meta">
+          <span class="oc-tag">Register & Verify</span>
+          <span class="dot"></span>
+          <span class="oc-tag">10 Min</span>
         </div>
-
-        <div class="space-y-4">
-            <button onclick="call_locker();" class="w-full bg-red-600 hover:bg-red-700 text-white p-6 rounded-[2rem] flex items-center justify-between group transition-all duration-300 transform active:scale-95 shadow-xl shadow-red-600/20">
-                <div class="flex items-center gap-4 text-left">
-                    <div class="bg-black/20 p-4 rounded-2xl group-hover:bg-black/40 transition-colors">
-                        <i class="fas fa-bolt text-2xl text-yellow-400"></i>
-                    </div>
-                    <div>
-                        <span class="block font-black text-lg tech-font">OPEN OFFERWALL</span>
-                        <span class="text-[10px] font-bold text-red-200 opacity-80 uppercase">Available Offers: 10+</span>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-right text-xl opacity-50 group-hover:translate-x-2 transition-transform"></i>
-            </button>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="glass-card p-4 rounded-3xl text-center">
-                    <i class="fas fa-globe text-red-600 mb-2"></i>
-                    <span class="block text-[10px] text-gray-500 font-bold uppercase">Global Ads</span>
-                </div>
-                <div class="glass-card p-4 rounded-3xl text-center">
-                    <i class="fas fa-clock text-red-600 mb-2"></i>
-                    <span class="block text-[10px] text-gray-500 font-bold uppercase">Fast Payout</span>
-                </div>
-            </div>
+        <div class="oc-progress">
+          <div class="prog-label"><span>Slots Left</span><span>Limited</span></div>
+          <div class="prog-track"><div class="prog-fill pf-r" style="width:30%"></div></div>
         </div>
+      </div>
+      <div class="oc-right">
+        <div class="oc-reward">🪙 800<small>coins</small></div>
+        <span class="badge b-vip">👑 VIP</span>
+      </div>
+    </a>
 
-    </main>
+    <!-- ★ OFFER 3 — NEW APP -->
+    <a class="offer-card" data-cat="app new" href="#" onclick="openOffer(event, 'OFFER_LINK_3', 'App Install')">
+      <div class="oc-icon ic-c">📱</div>
+      <div class="oc-info">
+        <div class="oc-name">App Install Offer</div>
+        <div class="oc-meta">
+          <span class="oc-tag">Install & Open</span>
+          <span class="dot"></span>
+          <span class="oc-tag">2 Min</span>
+        </div>
+        <div class="oc-progress">
+          <div class="prog-label"><span>Completion Rate</span><span>94%</span></div>
+          <div class="prog-track"><div class="prog-fill pf-g" style="width:94%"></div></div>
+        </div>
+      </div>
+      <div class="oc-right">
+        <div class="oc-reward">🪙 150<small>coins</small></div>
+        <span class="badge b-new">✦ New</span>
+      </div>
+    </a>
 
-    <footer class="mt-20 p-10 text-center border-t border-white/5">
-        <p class="text-[10px] text-gray-600 font-bold tracking-widest uppercase">Powered by AI Nayra Hub Tech</p>
-    </footer>
+    <!-- ★ OFFER 4 — SURVEY EASY -->
+    <a class="offer-card" data-cat="survey easy" href="#" onclick="openOffer(event, 'OFFER_LINK_4', 'Quick Survey')">
+      <div class="oc-icon ic-g">📋</div>
+      <div class="oc-info">
+        <div class="oc-name">Quick Survey</div>
+        <div class="oc-meta">
+          <span class="oc-tag">Form Fill</span>
+          <span class="dot"></span>
+          <span class="oc-tag">5 Min</span>
+        </div>
+        <div class="oc-progress">
+          <div class="prog-label"><span>Success Rate</span><span>98%</span></div>
+          <div class="prog-track"><div class="prog-fill pf-g" style="width:98%"></div></div>
+        </div>
+      </div>
+      <div class="oc-right">
+        <div class="oc-reward">🪙 200<small>coins</small></div>
+        <span class="badge b-easy">✓ Easy</span>
+      </div>
+    </a>
 
-    <script>
-        // CPAGrip function call logic
-        function call_locker() {
-            // Singingfiles.com script typically provides this function
-            // Agar script load ho gayi hai, toh yeh function automatically offer wall khol dega
-            if (typeof _gp === 'function' || typeof call_locker === 'function') {
-                // Yahan script ke documentation ke hisab se function trigger hota hai
-                // Mostly script inject hote hi events attach kar deti hai
-                console.log("CPAGrip Locker Triggered...");
-            }
-        }
-
-        // Dummy Coin update (In reality, use Supabase here)
-        document.getElementById('userCoins').innerText = "1250";
-    </script>
-</body>
-</html>
+    <body>
+        <html>
+            
+        </html>
+    </body>
